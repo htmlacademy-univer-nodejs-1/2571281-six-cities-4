@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
 import { readFileSync } from 'node:fs';
-import packageJson from '../package.json' assert { type: 'json' };
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const packageJson = require('../package.json');
 
 function printHelp(): void {
   console.log(chalk.green(`
@@ -37,6 +39,7 @@ function main(): void {
 
   if (!command) {
     printHelp();
+    return;
   }
 
   switch (command) {
