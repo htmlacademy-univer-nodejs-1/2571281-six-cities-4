@@ -97,7 +97,6 @@ function main(): void {
         console.log(chalk.red('Ошибка: не указан путь к файлу для импорта.'));
         throw new Error('Incorrect filepath given for --import');
       }
-      // Because importData is now async, handle it properly:
       importData(filePath)
         .catch((error) => {
           console.log(chalk.red(`Import error: ${error}`));
