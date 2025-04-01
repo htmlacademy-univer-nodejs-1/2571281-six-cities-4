@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
-import { readFileSync } from 'node:fs';
+import { createReadStream } from 'node:fs';
+import { createInterface } from 'node:readline';
 import { createRequire } from 'node:module';
 import { createMixedOffer, fetchOffersData, writeOffersToTSV } from './utils.js';
 
@@ -26,14 +27,37 @@ function printVersion(): void {
   console.log(chalk.blue(packageJson.version));
 }
 
-function importData(filePath: string): void {
-  try {
-    const fileContent = readFileSync(filePath, { encoding: 'utf-8' });
-    console.log(chalk.magenta(`Содержимое файла:\n${fileContent}`));
-  } catch (err) {
-    console.log(chalk.red(`Не удалось прочитать файл: ${err}`));
-    throw new Error('Unable to read file');
-  }
+export async function importData(filePath: string): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    try {
+      const readStream = createReadStream(filePath, { encoding: 'utf-8' });
+      const rl = createInterface({
+        input: readStream,
+        crlfDelay: Infinity,
+      });
+
+      rl.on('line', (line) => {
+        console.log(chalk.magenta(line));
+      });
+
+      rl.on('close', () => {
+        resolve();
+      });
+
+      rl.on('error', (error) => {
+        console.log(chalk.red(`Ошибка чтения файла: ${error}`));
+        reject(error);
+      });
+
+      readStream.on('error', (error) => {
+        console.log(chalk.red(`Не удалось прочитать файл: ${error}`));
+        reject(error);
+      });
+    } catch (error) {
+      console.log(chalk.red(`Не удалось инициализировать чтение файла: ${error}`));
+      reject(error);
+    }
+  });
 }
 
 async function generateData(n: number, filePath: string, url: string): Promise<void> {
@@ -73,7 +97,11 @@ function main(): void {
         console.log(chalk.red('Ошибка: не указан путь к файлу для импорта.'));
         throw new Error('Incorrect filepath given for --import');
       }
-      importData(filePath);
+      // Because importData is now async, handle it properly:
+      importData(filePath)
+        .catch((error) => {
+          console.log(chalk.red(`Import error: ${error}`));
+        });
       break;
     }
 
