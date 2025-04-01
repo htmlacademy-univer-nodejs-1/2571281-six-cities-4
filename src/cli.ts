@@ -2,6 +2,7 @@
 import chalk from 'chalk';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import { createMixedOffer, fetchOffersData, writeOffersToTSV } from './utils.js';
 const require = createRequire(import.meta.url);
 const packageJson = require('../package.json');
 
@@ -64,3 +65,15 @@ function main(): void {
 }
 
 main();
+
+try {
+  const offersFromServer = await fetchOffersData('http://localhost:3005/offers');
+
+  const generated = Array.from({ length: 10 }, () => createMixedOffer(offersFromServer));
+
+  await writeOffersToTSV(generated, './output/offers.tsv');
+
+  console.log('TSV file successfully written!');
+} catch (error) {
+  console.error('Error:', error);
+}
