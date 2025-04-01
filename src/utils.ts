@@ -47,30 +47,6 @@ export async function writeOffersToTSV(offers: Offer[], filePath: string): Promi
 
     const writeStream = createWriteStream(filePath, { encoding: 'utf-8' });
 
-    const headers = [
-      'title',
-      'description',
-      'postedDate',
-      'city',
-      'previewImage',
-      'images',
-      'isPremium',
-      'isFavorite',
-      'rating',
-      'type',
-      'roomsCount',
-      'guestsCount',
-      'price',
-      'amenities',
-      'authorName',
-      'authorEmail',
-      'commentsCount',
-      'locationLatitude',
-      'locationLongitude'
-    ];
-
-    writeStream.write(`${headers.join('\t') }\n`);
-
     for (const offer of offers) {
       const imagesStr = offer.images.join(',');
       const amenitiesStr = offer.amenities.join(',');
