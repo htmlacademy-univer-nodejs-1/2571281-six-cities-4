@@ -1,5 +1,9 @@
 export type UserType = 'usual' | 'pro';
 
+export const TYPES = {
+  Logger: Symbol.for('Logger'),
+};
+
 export interface User {
   name: string;
   email: string;
