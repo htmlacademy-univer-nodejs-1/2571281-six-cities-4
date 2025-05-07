@@ -5,7 +5,7 @@
 /dist/
 /docs/
 .idea/*
-
+.env
 .DS_Store
 coverage
 *.log
