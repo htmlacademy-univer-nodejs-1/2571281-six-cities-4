@@ -3,7 +3,8 @@ export type UserType = 'usual' | 'pro';
 export const TYPES = {
   Application: Symbol.for('Application'),
   Logger: Symbol.for('Logger'),
-  Config: Symbol.for('Config')
+  Config: Symbol.for('Config'),
+  DatabaseClient: Symbol.for('DatabaseClient'),
 };
 
 export interface User {
