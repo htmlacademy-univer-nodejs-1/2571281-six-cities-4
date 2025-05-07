@@ -6,6 +6,12 @@ loadDotenv();
 
 convict.addFormats(convictFormatWithValidator);
 
+export type AppSchema = {
+  PORT: number;
+  DB_HOST: string;
+  SALT: string;
+};
+
 export const appConfig = convict({
   PORT: {
     doc: 'Port on which the HTTP server will listen',
