@@ -14,7 +14,7 @@ export class Application {
 
   public async init(): Promise<void> {
     const port = this.config.get('PORT');
-    const mongoUri = this.config.get('mongoUri');
+    const mongoUri = this.config.get('MONGO_URI');
 
     await this.dbClient.connect(mongoUri);
     this.logger.info(`Application initialised. Configured port: ${port}`);
