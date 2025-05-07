@@ -1,9 +1,7 @@
-import { Logger } from '../core/logger/logger.interface.js';
+import { logger } from '../libs/logger.js';
 
 export class Application {
-  constructor(private readonly logger: Logger) {}
-
   public async init(): Promise<void> {
-    this.logger.info('Приложение инициализировано');
+    logger.info('Application initialised');
   }
 }
