@@ -10,6 +10,7 @@ export type AppSchema = {
   PORT: number;
   DB_HOST: string;
   SALT: string;
+  MONGO_URI: string;
 };
 
 export const appConfig = convict({
@@ -30,7 +31,13 @@ export const appConfig = convict({
     format: String,
     default: '',
     env: 'SALT'
-  }
+  },
+  MONGO_URI: {
+    doc: 'MongoDB connection URI',
+    format: String,
+    default: 'mongodb://127.0.0.1:27017/six-cities',
+    env: 'MONGO_URI',
+  },
 });
 
 appConfig.validate({ allowed: 'strict' });

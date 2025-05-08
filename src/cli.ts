@@ -1,9 +1,17 @@
 #!/usr/bin/env node
+import { PinoLogger } from './libs/logger.js';
+import { MongooseService } from './database/mongoose.service.js';
 import chalk from 'chalk';
 import { createReadStream } from 'node:fs';
 import { createInterface } from 'node:readline';
 import { createRequire } from 'node:module';
-import { createMixedOffer, fetchOffersData, writeOffersToTSV } from './utils.js';
+import { createMixedOffer, fetchOffersData, parseOffer, writeOffersToTSV } from './utils.js';
+import { OfferService } from './modules/offer/offer.service.js';
+import { CreateUserDto } from './modules/user/create-user.dto.js';
+import { UserService } from './modules/user/user.service.js';
+import { UserType } from './modules/user/user.enum.js';
+import { UserModel } from './modules/user/user.entity.js';
+import { OfferModel } from './modules/offer/offer.entity.js';
 
 const require = createRequire(import.meta.url);
 const packageJson = require('../package.json');
@@ -27,37 +35,52 @@ function printVersion(): void {
   console.log(chalk.blue(packageJson.version));
 }
 
-export async function importData(filePath: string): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    try {
-      const readStream = createReadStream(filePath, { encoding: 'utf-8' });
-      const rl = createInterface({
-        input: readStream,
-        crlfDelay: Infinity,
-      });
+export async function importData(filePath: string, mongoUri: string): Promise<void> {
+  const logger = new PinoLogger();
+  const db = new MongooseService(logger);
 
-      rl.on('line', (line) => {
-        console.log(chalk.magenta(line));
-      });
+  await db.connect(mongoUri);
 
-      rl.on('close', () => {
-        resolve();
-      });
+  const userService = new UserService(logger, UserModel);
+  const offerService = new OfferService(logger, OfferModel);
 
-      rl.on('error', (error) => {
-        console.log(chalk.red(`Ошибка чтения файла: ${error}`));
-        reject(error);
-      });
+  try {
+    const rl = createInterface({
+      input     : createReadStream(filePath, { encoding: 'utf-8' }),
+      crlfDelay : Infinity,
+    });
 
-      readStream.on('error', (error) => {
-        console.log(chalk.red(`Не удалось прочитать файл: ${error}`));
-        reject(error);
-      });
-    } catch (error) {
-      console.log(chalk.red(`Не удалось инициализировать чтение файла: ${error}`));
-      reject(error);
+    for await (const rawLine of rl) {
+      if (!rawLine.trim()) {
+        continue;
+      }
+
+      try {
+        const tokens = rawLine.split('\t');
+        const userDto: CreateUserDto = {
+          name     : tokens[14].trim(),
+          email    : tokens[15].trim(),
+          avatarUrl   : tokens[16].trim(),
+          type : tokens[17].trim() === 'pro' ? UserType.Pro : UserType.Regular,
+          passwordHash : 'pass_hash',
+        };
+
+        let host = await userService.findByEmail(userDto.email);
+        if (!host) {
+          host = await userService.create(userDto);
+        }
+
+        const offerDto = parseOffer(rawLine);
+        offerDto.host = host._id.toString();
+        await offerService.create(offerDto);
+      } catch (err) {
+        logger.warn(`Skipping bad row → ${(err as Error).message}`);
+      }
     }
-  });
+
+  } finally {
+    await db.disconnect();
+  }
 }
 
 async function generateData(n: number, filePath: string, url: string): Promise<void> {
@@ -93,11 +116,21 @@ function main(): void {
 
     case '--import': {
       const filePath = userArguments[1];
+      const maybeUri = userArguments[2];
+      const hostArg = userArguments[2];
+      const portArg = userArguments[3];
+      const dbNameArg = userArguments[4];
+
       if (!filePath) {
-        console.log(chalk.red('Ошибка: не указан путь к файлу для импорта.'));
-        throw new Error('Incorrect filepath given for --import');
+        console.log(chalk.red('Ошибка: не указан путь к TSV-файлу.'));
+        return;
       }
-      importData(filePath)
+
+      const mongoUri = (maybeUri && maybeUri.startsWith('mongodb'))
+        ? maybeUri
+        : `mongodb://${hostArg ?? 'localhost'}:${portArg ?? '27017'}/${dbNameArg ?? 'six-cities'}`;
+
+      importData(filePath, mongoUri)
         .catch((error) => {
           console.log(chalk.red(`Import error: ${error}`));
         });
