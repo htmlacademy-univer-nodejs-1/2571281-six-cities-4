@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { PinoLogger } from './libs/logger.js';
+import { MongooseService } from './database/mongoose.service.js';
 import chalk from 'chalk';
 import { createReadStream } from 'node:fs';
 import { createInterface } from 'node:readline';
@@ -28,38 +30,31 @@ function printVersion(): void {
 }
 
 export async function importData(filePath: string, mongoUri: string): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    try {
-      console.log(mongoUri);
-      const readStream = createReadStream(filePath, { encoding: 'utf-8' });
-      const rl = createInterface({
-        input: readStream,
-        crlfDelay: Infinity,
-      });
+  const logger = new PinoLogger();
+  const db = new MongooseService(logger);
 
-      rl.on('line', (line) => {
-        console.log(chalk.magenta(line));
-      });
+  await db.connect(mongoUri);
 
-      rl.on('close', () => {
-        resolve();
-      });
+  try {
+    const readStream = createReadStream(filePath, { encoding: 'utf-8' });
+    const rl = createInterface({ input: readStream, crlfDelay: Infinity });
 
-      rl.on('error', (error) => {
-        console.log(chalk.red(`Ошибка чтения файла: ${error}`));
-        reject(error);
-      });
+    rl.on('line', (line) => {
+      console.log(chalk.magenta(line));
+    });
 
-      readStream.on('error', (error) => {
-        console.log(chalk.red(`Не удалось прочитать файл: ${error}`));
-        reject(error);
-      });
-    } catch (error) {
-      console.log(chalk.red(`Не удалось инициализировать чтение файла: ${error}`));
-      reject(error);
-    }
-  });
+    await new Promise<void>((resolve, reject) => {
+      rl.on('close', resolve);
+      rl.on('error', reject);
+      readStream.on('error', reject);
+    });
+
+    console.log(chalk.green('Импорт завершён.'));
+  } finally {
+    await db.disconnect();
+  }
 }
+
 
 async function generateData(n: number, filePath: string, url: string): Promise<void> {
   try {
