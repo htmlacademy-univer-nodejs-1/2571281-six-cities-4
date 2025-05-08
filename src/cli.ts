@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import { createReadStream } from 'node:fs';
 import { createInterface } from 'node:readline';
 import { createRequire } from 'node:module';
-import { createMixedOffer, fetchOffersData, writeOffersToTSV } from './utils.js';
+import { createMixedOffer, fetchOffersData, parseOffer, writeOffersToTSV } from './utils.js';
 
 const require = createRequire(import.meta.url);
 const packageJson = require('../package.json');
@@ -40,7 +40,8 @@ export async function importData(filePath: string, mongoUri: string): Promise<vo
     const rl = createInterface({ input: readStream, crlfDelay: Infinity });
 
     rl.on('line', (line) => {
-      console.log(chalk.magenta(line));
+      const offerDto = parseOffer(line);
+      console.log(offerDto);
     });
 
     await new Promise<void>((resolve, reject) => {

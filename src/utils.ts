@@ -2,6 +2,8 @@ import got from 'got';
 import { Offer } from './types.js';
 import { getRandomItem } from './random.js';
 import { createWriteStream } from 'node:fs';
+import { CreateOfferDto } from './modules/offer/create-offer.dto.js';
+import { City, HousingType, Good } from './modules/offer/offer.enum.js';
 
 export async function fetchOffersData(url: string): Promise<Offer[]> {
   try {
@@ -85,4 +87,61 @@ export async function writeOffersToTSV(offers: Offer[], filePath: string): Promi
     writeStream.on('finish', () => resolve());
     writeStream.on('error', (error) => reject(error));
   });
+}
+
+export function parseOffer(line: string): CreateOfferDto {
+  const tokens = line.replace(/\r?\n$/, '').split('\t');
+
+  if (tokens.length !== 19) {
+    throw new Error(
+      `Malformed TSV row (${tokens.length} columns, expected 19):\n${line}`,
+    );
+  }
+
+  const [
+    title,
+    description,
+    postDate,
+    city,
+    previewImage,
+    images,
+    isPremium,
+    isFavorite,
+    rating,
+    type,
+    bedrooms,
+    maxAdults,
+    price,
+    goods,
+    /* hostName */, /* hostEmail */, /* commentCount */,
+    latitude,
+    longitude,
+  ] = tokens;
+
+  const toBool = (v: string) => v.trim().toLowerCase() === 'true';
+  const toNum = (v: string) => Number(v);
+  const trimList = (v: string, sep = ',') =>
+    v.split(sep).map((item) => item.trim()).filter(Boolean);
+
+  return {
+    title:        title.trim(),
+    description:  description.trim(),
+    postDate:     new Date(postDate),
+    city:         city.trim() as City,
+    previewImage: previewImage.trim(),
+    images:       trimList(images),
+    isPremium:    toBool(isPremium),
+    isFavorite:   toBool(isFavorite),
+    rating:       toNum(rating),
+    type:         type.trim() as HousingType,
+    bedrooms:     toNum(bedrooms),
+    maxAdults:    toNum(maxAdults),
+    price:        toNum(price),
+    goods:        trimList(goods).map((g) => g as Good),
+    host:         '',
+    coordinates: {
+      latitude :  toNum(latitude),
+      longitude:  toNum(longitude),
+    },
+  };
 }
