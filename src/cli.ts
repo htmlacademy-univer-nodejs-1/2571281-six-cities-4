@@ -6,6 +6,12 @@ import { createReadStream } from 'node:fs';
 import { createInterface } from 'node:readline';
 import { createRequire } from 'node:module';
 import { createMixedOffer, fetchOffersData, parseOffer, writeOffersToTSV } from './utils.js';
+import { OfferService } from './modules/offer/offer.service.js';
+import { CreateUserDto } from './modules/user/create-user.dto.js';
+import { UserService } from './modules/user/user.service.js';
+import { UserType } from './modules/user/user.enum.js';
+import { UserModel } from './modules/user/user.entity.js';
+import { OfferModel } from './modules/offer/offer.entity.js';
 
 const require = createRequire(import.meta.url);
 const packageJson = require('../package.json');
@@ -35,27 +41,47 @@ export async function importData(filePath: string, mongoUri: string): Promise<vo
 
   await db.connect(mongoUri);
 
+  const userService = new UserService(logger, UserModel);
+  const offerService = new OfferService(logger, OfferModel);
+
   try {
-    const readStream = createReadStream(filePath, { encoding: 'utf-8' });
-    const rl = createInterface({ input: readStream, crlfDelay: Infinity });
-
-    rl.on('line', (line) => {
-      const offerDto = parseOffer(line);
-      console.log(offerDto);
+    const rl = createInterface({
+      input     : createReadStream(filePath, { encoding: 'utf-8' }),
+      crlfDelay : Infinity,
     });
 
-    await new Promise<void>((resolve, reject) => {
-      rl.on('close', resolve);
-      rl.on('error', reject);
-      readStream.on('error', reject);
-    });
+    for await (const rawLine of rl) {
+      if (!rawLine.trim()) {
+        continue;
+      }
 
-    console.log(chalk.green('Импорт завершён.'));
+      try {
+        const tokens = rawLine.split('\t');
+        const userDto: CreateUserDto = {
+          name     : tokens[14].trim(),
+          email    : tokens[15].trim(),
+          avatarUrl   : tokens[16].trim(),
+          type : tokens[17].trim() === 'pro' ? UserType.Pro : UserType.Regular,
+          passwordHash : 'pass_hash',
+        };
+
+        let host = await userService.findByEmail(userDto.email);
+        if (!host) {
+          host = await userService.create(userDto);
+        }
+
+        const offerDto = parseOffer(rawLine);
+        offerDto.host = host._id.toString();
+        await offerService.create(offerDto);
+      } catch (err) {
+        logger.warn(`Skipping bad row → ${(err as Error).message}`);
+      }
+    }
+
   } finally {
     await db.disconnect();
   }
 }
-
 
 async function generateData(n: number, filePath: string, url: string): Promise<void> {
   try {

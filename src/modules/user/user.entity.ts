@@ -1,5 +1,6 @@
 import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import { UserType } from './user.enum.js';
+import { Types } from 'mongoose';
 
 @modelOptions({
   schemaOptions: {
@@ -8,6 +9,8 @@ import { UserType } from './user.enum.js';
   },
 })
 export class UserEntity {
+  public _id!: Types.ObjectId;
+
   @prop({ required: true, minlength: 1, maxlength: 15 })
   public name!: string;
 

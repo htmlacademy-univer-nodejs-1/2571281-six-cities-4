@@ -23,4 +23,8 @@ export class PinoLogger implements LoggerInterface {
   error(msg: string, err?: unknown): void {
     this.logger.error({ err }, msg);
   }
+
+  warn(msg: string): void {
+    this.logger.warn(msg);
+  }
 }
