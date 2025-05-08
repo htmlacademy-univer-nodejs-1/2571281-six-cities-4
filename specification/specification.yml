@@ -1,0 +1,460 @@
+openapi: 3.0.3
+info:
+  title: Six Cities REST API
+  description: >
+    Backend-сервис для приложения «Шесть городов».
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:{port}/api
+    description: Локальный сервер разработки
+    variables:
+      port:
+        default: "5000"
+
+tags:
+  - name: Auth
+    description: Аутентификация и сессии
+  - name: Users
+    description: Управление пользователями
+  - name: Offers
+    description: Операции с предложениями аренды
+  - name: Comments
+    description: Комментарии к предложениям
+  - name: Favorites
+    description: Избранные предложения пользователя
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    User:
+      type: object
+      description: Данные пользователя в системе.
+      required: [id, name, email, avatarUrl, type]
+      properties:
+        id:          { type: string, format: uuid, description: Уникальный идентификатор }
+        name:        { type: string, minLength: 1, maxLength: 15, description: Имя }
+        email:       { type: string, format: email, description: Адрес электронной почты }
+        avatarUrl:   { type: string, format: uri, description: URL аватара }
+        type:        { type: string, enum: [regular, pro], description: Тип учётной записи }
+
+    NewUser:
+      type: object
+      description: Данные для регистрации нового пользователя.
+      required: [name, email, password, type]
+      properties:
+        name:     { $ref: '#/components/schemas/User/properties/name' }
+        email:    { $ref: '#/components/schemas/User/properties/email' }
+        password: { type: string, minLength: 6, maxLength: 12, description: Пароль }
+        type:     { $ref: '#/components/schemas/User/properties/type' }
+        avatar:   { type: string, format: binary, description: Файл аватара }
+
+    Coordinates:
+      type: object
+      description: Геокоординаты размещения.
+      required: [latitude, longitude]
+      properties:
+        latitude:  { type: number, format: double, description: Широта }
+        longitude: { type: number, format: double, description: Долгота }
+
+    Offer:
+      type: object
+      description: Полное представление предложения об аренде.
+      required:
+        [id, title, description, postDate, city, previewImage, images,
+         isPremium, isFavorite, rating, type, bedrooms, maxAdults,
+         price, goods, host, commentsCount, location]
+      properties:
+        id:            { type: string, format: uuid, description: Идентификатор }
+        title:         { type: string, minLength: 10, maxLength: 100, description: Заголовок }
+        description:   { type: string, minLength: 20, maxLength: 1024, description: Описание }
+        postDate:      { type: string, format: date-time, description: Дата публикации }
+        city:          { type: string, enum: [Paris, Cologne, Brussels, Amsterdam, Hamburg, Dusseldorf], description: Город }
+        previewImage:  { type: string, format: uri, description: Превью-изображение }
+        images:
+          type: array
+          minItems: 6
+          maxItems: 6
+          description: Шесть изображений предложения.
+          items: { type: string, format: uri }
+        isPremium:     { type: boolean, description: Признак «Премиум» }
+        isFavorite:    { type: boolean, description: В избранном ли у пользователя }
+        rating:        { type: number, minimum: 1, maximum: 5, description: Рейтинг }
+        type:          { type: string, enum: [apartment, house, room, hotel], description: Тип жилья }
+        bedrooms:      { type: integer, minimum: 1, maximum: 8, description: Количество спален }
+        maxAdults:     { type: integer, minimum: 1, maximum: 10, description: Максимум гостей }
+        price:         { type: integer, minimum: 100, maximum: 100000, description: Стоимость за ночь }
+        goods:
+          type: array
+          description: Перечень удобств.
+          items:
+            type: string
+            enum: [Breakfast, "Air conditioning", "Laptop friendly workspace",
+                   "Baby seat", Washer, Towels, Fridge]
+        host:          { $ref: '#/components/schemas/User' }
+        commentsCount: { type: integer, minimum: 0, description: Количество комментариев }
+        location:      { $ref: '#/components/schemas/Coordinates' }
+
+    NewOffer:
+      type: object
+      description: Данные для создания нового предложения.
+      required:
+        [title, description, city, previewImage, images,
+         isPremium, type, bedrooms, maxAdults, price, goods, location]
+      properties:
+        title:        { $ref: '#/components/schemas/Offer/properties/title' }
+        description:  { $ref: '#/components/schemas/Offer/properties/description' }
+        city:         { $ref: '#/components/schemas/Offer/properties/city' }
+        previewImage: { $ref: '#/components/schemas/Offer/properties/previewImage' }
+        images:       { $ref: '#/components/schemas/Offer/properties/images' }
+        isPremium:    { $ref: '#/components/schemas/Offer/properties/isPremium' }
+        type:         { $ref: '#/components/schemas/Offer/properties/type' }
+        bedrooms:     { $ref: '#/components/schemas/Offer/properties/bedrooms' }
+        maxAdults:    { $ref: '#/components/schemas/Offer/properties/maxAdults' }
+        price:        { $ref: '#/components/schemas/Offer/properties/price' }
+        goods:        { $ref: '#/components/schemas/Offer/properties/goods' }
+        location:     { $ref: '#/components/schemas/Offer/properties/location' }
+
+    Comment:
+      type: object
+      description: Комментарий к предложению.
+      required: [id, text, rating, postDate, user]
+      properties:
+        id:       { type: string, format: uuid, description: Идентификатор }
+        text:     { type: string, minLength: 5, maxLength: 1024, description: Текст комментария }
+        rating:   { type: integer, minimum: 1, maximum: 5, description: Оценка }
+        postDate: { type: string, format: date-time, description: Дата публикации }
+        user:     { $ref: '#/components/schemas/User' }
+
+    NewComment:
+      type: object
+      description: Данные для создания комментария.
+      required: [text, rating]
+      properties:
+        text:   { $ref: '#/components/schemas/Comment/properties/text' }
+        rating: { $ref: '#/components/schemas/Comment/properties/rating' }
+
+    AuthToken:
+      type: object
+      description: Токен доступа.
+      required: [accessToken]
+      properties:
+        accessToken: { type: string, description: JWT-токен }
+
+    Error:
+      type: object
+      description: Ошибка API.
+      required: [message]
+      properties:
+        message: { type: string, description: Сообщение об ошибке }
+
+  responses:
+    BadRequest:
+      description: Некорректные данные
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: Требуется авторизация
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: Доступ запрещён
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+paths:
+
+  /users:
+    post:
+      tags: [Users]
+      operationId: createUser
+      summary: Регистрация нового пользователя
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema: { $ref: '#/components/schemas/NewUser' }
+      responses:
+        "201":
+          description: Пользователь создан
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+        "400": { $ref: '#/components/responses/BadRequest' }
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      operationId: loginUser
+      summary: Вход пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:    { type: string, format: email, description: Адрес электронной почты }
+                password: { type: string, description: Пароль }
+      responses:
+        "200":
+          description: Успешная авторизация, возвращён JWT
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthToken' }
+        "401": { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      operationId: logoutUser
+      summary: Завершение сессии
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Сессия завершена
+        "401": { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/check:
+    get:
+      tags: [Auth]
+      operationId: checkAuth
+      summary: Проверка авторизации
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Пользователь авторизован
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+        "401": { $ref: '#/components/responses/Unauthorized' }
+
+  /offers:
+    get:
+      tags: [Offers]
+      operationId: listOffers
+      summary: Список предложений
+      parameters:
+        - in: query
+          name: limit
+          description: Максимальное количество результатов.
+          schema: { type: integer, minimum: 1, maximum: 100 }
+      responses:
+        "200":
+          description: Коллекция предложений
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Offer' }
+
+    post:
+      tags: [Offers]
+      operationId: createOffer
+      summary: Создать предложение
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NewOffer' }
+      responses:
+        "201":
+          description: Предложение создано
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Offer' }
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "401": { $ref: '#/components/responses/Unauthorized' }
+
+  /offers/{offerId}:
+    parameters:
+      - in: path
+        name: offerId
+        required: true
+        description: UUID предложения.
+        schema: { type: string, format: uuid }
+
+    get:
+      tags: [Offers]
+      operationId: getOffer
+      summary: Детали предложения
+      responses:
+        "200":
+          description: Детальная информация о предложении
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Offer' }
+        "404": { $ref: '#/components/responses/NotFound' }
+
+    patch:
+      tags: [Offers]
+      operationId: updateOffer
+      summary: Редактировать предложение
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NewOffer' }
+      responses:
+        "200":
+          description: Предложение обновлено
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Offer' }
+        "401": { $ref: '#/components/responses/Unauthorized' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+        "404": { $ref: '#/components/responses/NotFound' }
+
+    delete:
+      tags: [Offers]
+      operationId: deleteOffer
+      summary: Удалить предложение
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Предложение удалено
+        "401": { $ref: '#/components/responses/Unauthorized' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+        "404": { $ref: '#/components/responses/NotFound' }
+
+  /offers/{offerId}/comments:
+    parameters:
+      - in: path
+        name: offerId
+        required: true
+        description: UUID предложения.
+        schema: { type: string, format: uuid }
+
+    get:
+      tags: [Comments]
+      operationId: listComments
+      summary: Список комментариев
+      responses:
+        "200":
+          description: Коллекция комментариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Comment' }
+        "404": { $ref: '#/components/responses/NotFound' }
+
+    post:
+      tags: [Comments]
+      operationId: createComment
+      summary: Добавить комментарий
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NewComment' }
+      responses:
+        "201":
+          description: Комментарий создан
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Comment' }
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "401": { $ref: '#/components/responses/Unauthorized' }
+        "404": { $ref: '#/components/responses/NotFound' }
+
+  /offers/{offerId}/favorite:
+    parameters:
+      - in: path
+        name: offerId
+        required: true
+        description: UUID предложения.
+        schema: { type: string, format: uuid }
+
+    post:
+      tags: [Favorites]
+      operationId: addFavorite
+      summary: Добавить в избранное
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Предложение добавлено в избранное
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Offer' }
+        "401": { $ref: '#/components/responses/Unauthorized' }
+        "404": { $ref: '#/components/responses/NotFound' }
+
+    delete:
+      tags: [Favorites]
+      operationId: removeFavorite
+      summary: Убрать из избранного
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Предложение удалено из избранного
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Offer' }
+        "401": { $ref: '#/components/responses/Unauthorized' }
+        "404": { $ref: '#/components/responses/NotFound' }
+
+  /favorites:
+    get:
+      tags: [Favorites]
+      operationId: listFavorites
+      summary: Избранные предложения пользователя
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Коллекция избранных предложений
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Offer' }
+        "401": { $ref: '#/components/responses/Unauthorized' }
+
+  /cities/{city}/offers/premium:
+    parameters:
+      - in: path
+        name: city
+        required: true
+        description: Название города.
+        schema: { type: string, enum: [Paris, Cologne, Brussels, Amsterdam, Hamburg, Dusseldorf] }
+
+    get:
+      tags: [Offers]
+      operationId: listCityPremiumOffers
+      summary: Премиальные предложения города
+      responses:
+        "200":
+          description: Подборка премиальных предложений города
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Offer' }
+        "404": { $ref: '#/components/responses/NotFound' }
