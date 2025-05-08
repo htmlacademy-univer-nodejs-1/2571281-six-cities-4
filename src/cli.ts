@@ -27,9 +27,10 @@ function printVersion(): void {
   console.log(chalk.blue(packageJson.version));
 }
 
-export async function importData(filePath: string): Promise<void> {
+export async function importData(filePath: string, mongoUri: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     try {
+      console.log(mongoUri);
       const readStream = createReadStream(filePath, { encoding: 'utf-8' });
       const rl = createInterface({
         input: readStream,
@@ -93,11 +94,21 @@ function main(): void {
 
     case '--import': {
       const filePath = userArguments[1];
+      const maybeUri = userArguments[2];
+      const hostArg = userArguments[2];
+      const portArg = userArguments[3];
+      const dbNameArg = userArguments[4];
+
       if (!filePath) {
-        console.log(chalk.red('Ошибка: не указан путь к файлу для импорта.'));
-        throw new Error('Incorrect filepath given for --import');
+        console.log(chalk.red('Ошибка: не указан путь к TSV-файлу.'));
+        return;
       }
-      importData(filePath)
+
+      const mongoUri = (maybeUri && maybeUri.startsWith('mongodb'))
+        ? maybeUri
+        : `mongodb://${hostArg ?? 'localhost'}:${portArg ?? '27017'}/${dbNameArg ?? 'six-cities'}`;
+
+      importData(filePath, mongoUri)
         .catch((error) => {
           console.log(chalk.red(`Import error: ${error}`));
         });
