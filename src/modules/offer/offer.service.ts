@@ -15,14 +15,17 @@ export class OfferService implements OfferServiceInterface {
   public async create(dto: CreateOfferDto): Promise<OfferEntity> {
     const offer = await this.offerModel.create(dto);
     this.logger.info(`[Offer] created: ${offer.id}`);
-    return offer;
+    return offer.toObject();
   }
 
   public findById(id: string): Promise<OfferEntity | null> {
-    return this.offerModel.findById(id).exec();
+    return this.offerModel.findById(id).lean().exec();
   }
 
-  public async incCommentCount(offerId: string, newRating: number): Promise<void> {
+  public async incCommentCount(
+    offerId: string,
+    newRating: number,
+  ): Promise<void> {
     const offer = await this.offerModel.findById(offerId);
     if (!offer) {
       return;
@@ -36,11 +39,37 @@ export class OfferService implements OfferServiceInterface {
     await offer.save();
   }
 
-  public async findPremiumByCity(city: string, limit = 10): Promise<OfferEntity[]> {
+  public async findPremiumByCity(
+    city: string,
+    limit = 10,
+  ): Promise<OfferEntity[]> {
     return this.offerModel
       .find({ city, isPremium: true })
       .sort({ createdAt: -1 })
       .limit(limit)
+      .lean()
       .exec();
+  }
+
+  public async list(limit?: number): Promise<OfferEntity[]> {
+    const query = this.offerModel.find().sort({ createdAt: -1 });
+    if (limit) {
+      query.limit(limit);
+    }
+    return query.lean().exec();
+  }
+
+  public async updateById(
+    id: string,
+    dto: Partial<CreateOfferDto>,
+  ): Promise<OfferEntity | null> {
+    return this.offerModel
+      .findByIdAndUpdate(id, dto, { new: true, lean: true })
+      .exec();
+  }
+
+  public async deleteById(id: string): Promise<boolean> {
+    const result = await this.offerModel.deleteOne({ _id: id }).exec();
+    return result.deletedCount === 1;
   }
 }
