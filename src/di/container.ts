@@ -12,6 +12,7 @@ import { OfferServiceInterface } from '../modules/offer/offer.service.interface.
 import { UserModel } from '../modules/user/index.js';
 import { OfferModel } from '../modules/offer/index.js';
 import { CommentModel, CommentService, CommentServiceInterface } from '../modules/comment/index.js';
+import { FavoriteModel, FavoriteService, FavoriteServiceInterface } from '../modules/favorite/index.js';
 
 const container = new Container();
 
@@ -43,5 +44,12 @@ container
   .bind<CommentServiceInterface>(TYPES.CommentService)
   .to(CommentService);
 
+container
+  .bind<FavoriteServiceInterface>(TYPES.FavoriteService)
+  .to(FavoriteService);
+
+container
+  .bind<typeof FavoriteModel>(TYPES.FavoriteModel)
+  .toConstantValue(FavoriteModel);
 
 export { container };
