@@ -21,4 +21,19 @@ export class OfferService implements OfferServiceInterface {
   public findById(id: string): Promise<OfferEntity | null> {
     return this.offerModel.findById(id).exec();
   }
+
+  public async incCommentCount(offerId: string, newRating: number): Promise<void> {
+    const offer = await this.offerModel.findById(offerId);
+    if (!offer) {
+      return;
+    }
+
+    const total = offer.rating * offer.commentCount + newRating;
+    const count = offer.commentCount + 1;
+
+    offer.rating = Number((total / count).toFixed(1));
+    offer.commentCount = count;
+    await offer.save();
+  }
+
 }
