@@ -21,21 +21,9 @@ export class UserController extends Controller {
     super();
 
     this.addRoute({
-      path: '/users/register',
+      path: '/users',
       method: HttpMethod.Post,
       handler: this.register,
-    });
-
-    this.addRoute({
-      path: '/users/login',
-      method: HttpMethod.Post,
-      handler: this.login,
-    });
-
-    this.addRoute({
-      path: '/users/:userId',
-      method: HttpMethod.Get,
-      handler: this.show,
     });
   }
 
@@ -55,14 +43,5 @@ export class UserController extends Controller {
     const newUser = await this.userService.create(createDto);
 
     this.created(res, plainToInstance(UserResponseDto, newUser));
-  }
-
-
-  private async login(_: Request, res: Response): Promise<void> {
-    this.notImplemented(res);
-  }
-
-  private async show(_: Request, res: Response): Promise<void> {
-    this.notImplemented(res);
   }
 }
