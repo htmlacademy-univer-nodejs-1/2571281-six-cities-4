@@ -1,4 +1,3 @@
-// src/modules/offer/offer.controller.ts
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 import { Controller } from '../../common/controller/controller.js';
