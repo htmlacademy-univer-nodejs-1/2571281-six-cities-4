@@ -6,7 +6,10 @@ import { DatabaseClient } from '../database/database-client.interface.js';
 import express, { type Express } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Controller } from '../common/controller/controller.js';
-import { HelloController } from '../modules/hello/hello.controller.js';
+import { container } from '../di/container.js';
+import { UserController } from '../modules/user/user.controller.js';
+import { OfferController } from '../modules/offer/offer.controller.js';
+import { FavoriteController } from '../modules/favorite/favorite.controller.js';
 
 
 @injectable()
@@ -26,12 +29,16 @@ export class Application {
 
     await this.dbClient.connect(mongoUri);
 
-    this.app.use(express.json());
+    this.registerMiddlewares();
     this.app.get('/ping', (_req, res) => {
       res.sendStatus(StatusCodes.OK);
     });
 
-    this.controllers.push(new HelloController());
+    this.controllers.push(
+      container.get(UserController),
+      container.get(OfferController),
+      container.get(FavoriteController),
+    );
     this.registerControllers();
 
     this.app.listen(port, () =>
@@ -46,5 +53,9 @@ export class Application {
         `[Route] Controller ${c.constructor.name} mounted with ${c.router.stack.length} routes`,
       );
     });
+  }
+
+  private registerMiddlewares(): void {
+    this.app.use(express.json());
   }
 }

@@ -54,6 +54,12 @@ export abstract class Controller {
     this.send(res, StatusCodes.NOT_FOUND, { message });
   }
 
+  protected notImplemented(res: Response): void {
+    res
+      .status(StatusCodes.NOT_IMPLEMENTED)
+      .json({ message: 'Not implemented' });
+  }
+
   private send<T>(
     res: Response,
     statusCode: number,
