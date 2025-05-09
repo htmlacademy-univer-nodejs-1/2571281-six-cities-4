@@ -5,6 +5,8 @@ import type { ConfigService } from '../config/config.service.js';
 import { DatabaseClient } from '../database/database-client.interface.js';
 import express, { type Express } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import { Controller } from '../common/controller/controller.js';
+import { HelloController } from '../modules/hello/hello.controller.js';
 
 
 @injectable()
@@ -16,6 +18,7 @@ export class Application {
   ) {}
 
   private readonly app: Express = express();
+  private readonly controllers: Controller[] = [];
 
   public async init(): Promise<void> {
     const port = this.config.get('PORT');
@@ -28,9 +31,20 @@ export class Application {
       res.sendStatus(StatusCodes.OK);
     });
 
+    this.controllers.push(new HelloController());
+    this.registerControllers();
+
     this.app.listen(port, () =>
       this.logger.info(`🟢 Express server is listening on port ${port}`),
     );
   }
 
+  private registerControllers(): void {
+    this.controllers.forEach((c) => {
+      this.app.use('/', c.router);
+      this.logger.info(
+        `[Route] Controller ${c.constructor.name} mounted with ${c.router.stack.length} routes`,
+      );
+    });
+  }
 }
