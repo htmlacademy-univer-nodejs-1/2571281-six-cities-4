@@ -3,6 +3,9 @@ import { TYPES } from '../types.js';
 import type { LoggerInterface } from '../libs/logger.interface.js';
 import type { ConfigService } from '../config/config.service.js';
 import { DatabaseClient } from '../database/database-client.interface.js';
+import express, { type Express } from 'express';
+import { StatusCodes } from 'http-status-codes';
+
 
 @injectable()
 export class Application {
@@ -12,11 +15,22 @@ export class Application {
     @inject(TYPES.DatabaseClient) private readonly dbClient: DatabaseClient,
   ) {}
 
+  private readonly app: Express = express();
+
   public async init(): Promise<void> {
     const port = this.config.get('PORT');
     const mongoUri = this.config.get('MONGO_URI');
 
     await this.dbClient.connect(mongoUri);
-    this.logger.info(`Application initialised. Configured port: ${port}`);
+
+    this.app.use(express.json());
+    this.app.get('/ping', (_req, res) => {
+      res.sendStatus(StatusCodes.OK);
+    });
+
+    this.app.listen(port, () =>
+      this.logger.info(`🟢 Express server is listening on port ${port}`),
+    );
   }
+
 }
