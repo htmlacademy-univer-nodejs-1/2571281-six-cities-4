@@ -5,4 +5,5 @@ import { DatabaseRepositoryInterface } from '../../common/database.repository.in
 export interface OfferServiceInterface
   extends DatabaseRepositoryInterface<OfferEntity, CreateOfferDto> {
   incCommentCount(offerId: string, newRating: number): Promise<void>;
+  findPremiumByCity(city: string, limit?: number): Promise<OfferEntity[]>;
 }

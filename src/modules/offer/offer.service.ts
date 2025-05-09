@@ -36,4 +36,11 @@ export class OfferService implements OfferServiceInterface {
     await offer.save();
   }
 
+  public async findPremiumByCity(city: string, limit = 10): Promise<OfferEntity[]> {
+    return this.offerModel
+      .find({ city, isPremium: true })
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .exec();
+  }
 }
