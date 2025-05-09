@@ -9,6 +9,10 @@ export const TYPES = {
   OfferService: Symbol.for('OfferService'),
   UserModel      : Symbol.for('UserModel'),
   OfferModel     : Symbol.for('OfferModel'),
+  CommentService : Symbol.for('CommentService'),
+  CommentModel   : Symbol.for('CommentModel'),
+  FavoriteService : Symbol.for('FavoriteService'),
+  FavoriteModel   : Symbol.for('FavoriteModel'),
 };
 
 export interface User {
