@@ -382,8 +382,34 @@ paths:
         "401": { $ref: '#/components/responses/Unauthorized' }
         "404": { $ref: '#/components/responses/NotFound' }
 
-  /offers/{offerId}/favorite:
+  /favorites/{userId}:
     parameters:
+      - in: path
+        name: userId
+        required: true
+        description: UUID пользователя.
+        schema: { type: string, format: uuid }
+
+    get:
+      tags: [Favorites]
+      operationId: listFavorites
+      summary: Избранные предложения пользователя
+      responses:
+        "200":
+          description: Коллекция избранных предложений
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Offer' }
+
+  /favorites/{userId}/{offerId}:
+    parameters:
+      - in: path
+        name: userId
+        required: true
+        description: UUID пользователя.
+        schema: { type: string, format: uuid }
       - in: path
         name: offerId
         required: true
@@ -393,49 +419,24 @@ paths:
     post:
       tags: [Favorites]
       operationId: addFavorite
-      summary: Добавить в избранное
-      security:
-        - bearerAuth: []
+      summary: Добавить предложение в избранное пользователя
       responses:
-        "200":
+        "201":
           description: Предложение добавлено в избранное
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/Offer' }
-        "401": { $ref: '#/components/responses/Unauthorized' }
-        "404": { $ref: '#/components/responses/NotFound' }
+              schema:
+                type: object
+                properties:
+                  offerId: { type: string, format: uuid }
 
     delete:
       tags: [Favorites]
       operationId: removeFavorite
-      summary: Убрать из избранного
-      security:
-        - bearerAuth: []
+      summary: Убрать предложение из избранного пользователя
       responses:
-        "200":
+        "204":
           description: Предложение удалено из избранного
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/Offer' }
-        "401": { $ref: '#/components/responses/Unauthorized' }
-        "404": { $ref: '#/components/responses/NotFound' }
-
-  /favorites:
-    get:
-      tags: [Favorites]
-      operationId: listFavorites
-      summary: Избранные предложения пользователя
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: Коллекция избранных предложений
-          content:
-            application/json:
-              schema:
-                type: array
-                items: { $ref: '#/components/schemas/Offer' }
-        "401": { $ref: '#/components/responses/Unauthorized' }
 
   /cities/{city}/offers/premium:
     parameters:
