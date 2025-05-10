@@ -15,11 +15,11 @@ export class OfferService implements OfferServiceInterface {
   public async create(dto: CreateOfferDto): Promise<OfferEntity> {
     const offer = await this.offerModel.create(dto);
     this.logger.info(`[Offer] created: ${offer.id}`);
-    return offer.toObject();
+    return offer;
   }
 
   public findById(id: string): Promise<OfferEntity | null> {
-    return this.offerModel.findById(id).lean().exec();
+    return this.offerModel.findById(id).exec();
   }
 
   public async incCommentCount(
@@ -47,7 +47,6 @@ export class OfferService implements OfferServiceInterface {
       .find({ city, isPremium: true })
       .sort({ createdAt: -1 })
       .limit(limit)
-      .lean()
       .exec();
   }
 
@@ -56,7 +55,7 @@ export class OfferService implements OfferServiceInterface {
     if (limit) {
       query.limit(limit);
     }
-    return query.lean().exec();
+    return query.exec();
   }
 
   public async updateById(

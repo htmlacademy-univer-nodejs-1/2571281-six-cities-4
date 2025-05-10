@@ -6,7 +6,7 @@ import {
 } from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import { StatusCodes } from 'http-status-codes';
-import { instanceToPlain } from 'class-transformer';
+// import { instanceToPlain } from 'class-transformer';
 
 // import { HttpMethod } from '../http-method.enum.js';
 import { RouteInterface } from '../route.interface.js';
@@ -70,6 +70,6 @@ export abstract class Controller {
       return;
     }
 
-    res.status(statusCode).json(instanceToPlain(payload));
+    res.status(statusCode).json(payload);
   }
 }
