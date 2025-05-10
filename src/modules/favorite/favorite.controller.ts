@@ -10,23 +10,36 @@ export class FavoriteController extends Controller {
     super();
 
     this.addRoute({
-      path: '/favorites',
+      path: '/favorites/:userId',
       method: HttpMethod.Get,
-      handler: this.index,
+      handler: this.list,
     });
 
     this.addRoute({
-      path: '/favorites/:offerId/:status',
+      path: '/favorites/:userId/:offerId',
       method: HttpMethod.Post,
-      handler: this.toggle,
+      handler: this.add,
+    });
+
+    this.addRoute({
+      path: '/favorites/:userId/:offerId',
+      method: HttpMethod.Delete,
+      handler: this.remove,
     });
   }
 
-  private async index(_: Request, res: Response): Promise<void> {
+  private async list(_: Request, res: Response): Promise<void> {
+    // List all favorites of a given user id
     this.notImplemented(res);
   }
 
-  private async toggle(_: Request, res: Response): Promise<void> {
+  private async add(_: Request, res: Response): Promise<void> {
+    // Add an offer with a given id to a user with a given id favorite
+    this.notImplemented(res);
+  }
+
+  private async remove(_: Request, res: Response): Promise<void> {
+    // Remove an offer with a given id from a user with a given id favorite
     this.notImplemented(res);
   }
 }
