@@ -33,6 +33,7 @@ export class FavoriteService implements FavoriteServiceInterface {
       .populate('offer')
       .sort({ createdAt: -1 })
       .limit(limit)
+      .lean()
       .exec();
   }
 }

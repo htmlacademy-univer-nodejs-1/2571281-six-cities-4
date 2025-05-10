@@ -1,12 +1,17 @@
 import { Request, Response } from 'express';
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 
 import { Controller } from '../../common/controller/controller.js';
 import { HttpMethod } from '../../common/http-method.enum.js';
+import { TYPES } from '../../types.js';
+
+import type { FavoriteServiceInterface } from './favorite.service.interface.js';
 
 @injectable()
 export class FavoriteController extends Controller {
-  constructor() {
+  constructor(
+    @inject(TYPES.FavoriteService) private readonly favoriteService: FavoriteServiceInterface,
+  ) {
     super();
 
     this.addRoute({
@@ -28,18 +33,33 @@ export class FavoriteController extends Controller {
     });
   }
 
-  private async list(_: Request, res: Response): Promise<void> {
-    // List all favorites of a given user id
-    this.notImplemented(res);
+  private async list(req: Request, res: Response): Promise<void> {
+    const { userId } = req.params;
+    const favorites = await this.favoriteService.findByUser(userId);
+
+    this.ok(res, favorites);
   }
 
-  private async add(_: Request, res: Response): Promise<void> {
-    // Add an offer with a given id to a user with a given id favorite
-    this.notImplemented(res);
+  private async add(req: Request, res: Response): Promise<void> {
+    const { userId, offerId } = req.params;
+    const { added } = await this.favoriteService.toggle(userId, offerId);
+
+    if (added) {
+      this.created(res, { offerId });
+    } else {
+      this.ok(res, { offerId });
+    }
   }
 
-  private async remove(_: Request, res: Response): Promise<void> {
-    // Remove an offer with a given id from a user with a given id favorite
-    this.notImplemented(res);
+  private async remove(req: Request, res: Response): Promise<void> {
+    const { userId, offerId } = req.params;
+    const { added } = await this.favoriteService.toggle(userId, offerId);
+
+    if (added) {
+      this.notFound(res, `Favorite for offer ${offerId} not found for user ${userId}`);
+      return;
+    }
+
+    this.noContent(res);
   }
 }
