@@ -7,6 +7,7 @@ import { CommentServiceInterface } from './comment.service.interface.js';
 import { CreateCommentDto } from './create-comment.dto.js';
 import { HttpError } from '../../common/errors/http-error.js';
 import { validateObjectId } from '../../app/middleware/validate-objectid.middleware.js';
+import { validateDto } from '../../app/middleware/validate-dto.middleware.js';
 
 @injectable()
 export class CommentController extends Controller {
@@ -27,7 +28,7 @@ export class CommentController extends Controller {
       path: '/offers/:offerId/comments/:userId',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [validateObjectId('offerId'), validateObjectId('userId')]
+      middlewares: [validateObjectId('offerId'), validateObjectId('userId'), validateDto(CreateCommentDto)]
     });
   }
 

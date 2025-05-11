@@ -1,4 +1,7 @@
+import { IsString, Length } from 'class-validator';
+
 export class CreateCommentDto {
-  public text!: string;
-  public rating!: number;
+  @IsString()
+  @Length(20, 1024)
+    text!: string;
 }
