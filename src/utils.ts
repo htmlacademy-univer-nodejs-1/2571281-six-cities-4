@@ -21,37 +21,36 @@ export async function fetchOffersData(url: string): Promise<Offer[]> {
 
 export function createMixedOffer(offers: Offer[]): Offer {
   return {
-    title: getRandomItem(offers).title,
-    description: getRandomItem(offers).description,
-    postedDate: getRandomItem(offers).postedDate,
-    city: getRandomItem(offers).city,
-    previewImage: getRandomItem(offers).previewImage,
-    isPremium: getRandomItem(offers).isPremium,
-    isFavorite: getRandomItem(offers).isFavorite,
-    rating: getRandomItem(offers).rating,
-    type: getRandomItem(offers).type,
-    roomsCount: getRandomItem(offers).roomsCount,
-    guestsCount: getRandomItem(offers).guestsCount,
-    price: getRandomItem(offers).price,
-    commentsCount: getRandomItem(offers).commentsCount,
-
-    images: getRandomItem(offers).images,
-    amenities: getRandomItem(offers).amenities,
-
-    author: getRandomItem(offers).author,
-
-    location: getRandomItem(offers).location
+    title:         getRandomItem(offers).title,
+    description:   getRandomItem(offers).description,
+    postDate:      getRandomItem(offers).postDate,
+    city:          getRandomItem(offers).city,
+    previewImage:  getRandomItem(offers).previewImage,
+    images:        getRandomItem(offers).images,
+    isPremium:     getRandomItem(offers).isPremium,
+    isFavorite:    getRandomItem(offers).isFavorite,
+    rating:        getRandomItem(offers).rating,
+    type:          getRandomItem(offers).type,
+    bedrooms:      getRandomItem(offers).bedrooms,
+    maxAdults:     getRandomItem(offers).maxAdults,
+    price:         getRandomItem(offers).price,
+    goods:         getRandomItem(offers).goods,
+    host:          getRandomItem(offers).host,
+    commentCount:  getRandomItem(offers).commentCount,
+    coordinates:   getRandomItem(offers).coordinates
   };
 }
 
-export async function writeOffersToTSV(offers: Offer[], filePath: string): Promise<void> {
+export async function writeOffersToTSV(
+  offers: Offer[],
+  filePath: string
+): Promise<void> {
   return new Promise((resolve, reject) => {
-
-    const writeStream = createWriteStream(filePath, { encoding: 'utf-8' });
+    const ws = createWriteStream(filePath, { encoding: 'utf-8' });
 
     for (const offer of offers) {
       const imagesStr = offer.images.join(',');
-      const amenitiesStr = offer.amenities.join(',');
+      const goodsStr = offer.goods.join(',');
 
       const safeTitle = offer.title.replace(/\t|\n/g, ' ');
       const safeDescription = offer.description.replace(/\t|\n/g, ' ');
@@ -59,33 +58,27 @@ export async function writeOffersToTSV(offers: Offer[], filePath: string): Promi
       const lineFields = [
         safeTitle,
         safeDescription,
-        offer.postedDate.toString(),
         offer.city,
         offer.previewImage,
         imagesStr,
         offer.isPremium.toString(),
-        offer.isFavorite.toString(),
-        offer.rating.toString(),
         offer.type,
-        offer.roomsCount.toString(),
-        offer.guestsCount.toString(),
+        offer.bedrooms.toString(),
+        offer.maxAdults.toString(),
         offer.price.toString(),
-        amenitiesStr,
-        offer.author.name,
-        offer.author.email,
-        offer.commentsCount.toString(),
-        offer.location.latitude.toString(),
-        offer.location.longitude.toString()
+        goodsStr,
+        offer.host.name,
+        offer.host.email,
+        offer.coordinates.latitude.toString(),
+        offer.coordinates.longitude.toString()
       ];
 
-      const line = lineFields.join('\t');
-      writeStream.write(`${line }\n`);
+      ws.write(`${lineFields.join('\t')}\n`);
     }
 
-    writeStream.end();
-
-    writeStream.on('finish', () => resolve());
-    writeStream.on('error', (error) => reject(error));
+    ws.end();
+    ws.on('finish', resolve);
+    ws.on('error', reject);
   });
 }
 
@@ -94,7 +87,7 @@ export function parseOffer(line: string): CreateOfferDto {
 
   if (tokens.length !== 19) {
     throw new Error(
-      `Malformed TSV row (${tokens.length} columns, expected 19):\n${line}`,
+      `Malformed TSV row (${tokens.length} columns, expected 19):\n${line}`
     );
   }
 
@@ -105,21 +98,20 @@ export function parseOffer(line: string): CreateOfferDto {
     previewImage,
     images,
     isPremium,
-    rating,
     type,
     bedrooms,
     maxAdults,
     price,
     goods,
-    /* hostName */, /* hostEmail */, /* commentCount */,
+    /* hostName */, /* hostEmail */,
     latitude,
-    longitude,
+    longitude
   ] = tokens;
 
   const toBool = (v: string) => v.trim().toLowerCase() === 'true';
   const toNum = (v: string) => Number(v);
   const trimList = (v: string, sep = ',') =>
-    v.split(sep).map((item) => item.trim()).filter(Boolean);
+    v.split(sep).map((s) => s.trim()).filter(Boolean);
 
   return {
     title:        title.trim(),
@@ -128,16 +120,15 @@ export function parseOffer(line: string): CreateOfferDto {
     previewImage: previewImage.trim(),
     images:       trimList(images),
     isPremium:    toBool(isPremium),
-    rating:       toNum(rating),
     type:         type.trim() as HousingType,
     bedrooms:     toNum(bedrooms),
     maxAdults:    toNum(maxAdults),
     price:        toNum(price),
     goods:        trimList(goods).map((g) => g as Good),
-    hostId:         '',
+    hostId:       '',
     coordinates: {
-      latitude :  toNum(latitude),
-      longitude:  toNum(longitude),
-    },
+      latitude : toNum(latitude),
+      longitude: toNum(longitude)
+    }
   };
 }

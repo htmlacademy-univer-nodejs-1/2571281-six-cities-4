@@ -1,185 +1,179 @@
 {
-    "offers": [
-      {
-        "id": 1,
-        "title": "Charming Studio in Paris",
-        "description": "Enjoy your stay in this comfy studio located in the heart of Paris.",
-        "postedDate": "2023-09-01T10:00:00.000Z",
-        "city": "Paris",
-        "previewImage": "https://example.com/image-preview1.jpg",
-        "images": [
-          "https://example.com/photo1.jpg",
-          "https://example.com/photo2.jpg",
-          "https://example.com/photo3.jpg",
-          "https://example.com/photo4.jpg",
-          "https://example.com/photo5.jpg",
-          "https://example.com/photo6.jpg"
-        ],
-        "isPremium": true,
-        "isFavorite": false,
-        "rating": 4.9,
-        "type": "apartment",
-        "roomsCount": 1,
-        "guestsCount": 2,
-        "price": 120,
-        "amenities": ["Breakfast", "Towels", "Fridge"],
-        "author": {
-          "name": "Alice",
-          "email": "alice@example.com",
-          "avatarPath": "https://example.com/avatar-alice.jpg",
-          "password": "alice123",
-          "userType": "pro"
-        },
-        "commentsCount": 0,
-        "location": {
-          "latitude": 48.85661,
-          "longitude": 2.351499
-        }
+  "offers": [
+    {
+      "title": "Charming Studio in Paris",
+      "description": "Enjoy your stay in this comfy studio located just steps away from the Louvre and the vibrant cafés of central Paris.",
+      "postDate": "2023-09-01T10:00:00.000Z",
+      "city": "Paris",
+      "previewImage": "https://example.com/image-preview1.jpg",
+      "images": [
+        "https://example.com/photo1.jpg",
+        "https://example.com/photo2.jpg",
+        "https://example.com/photo3.jpg",
+        "https://example.com/photo4.jpg",
+        "https://example.com/photo5.jpg",
+        "https://example.com/photo6.jpg"
+      ],
+      "isPremium": true,
+      "isFavorite": false,
+      "rating": 4.9,
+      "type": "apartment",
+      "bedrooms": 1,
+      "maxAdults": 2,
+      "price": 120,
+      "goods": ["Breakfast", "Towels", "Fridge"],
+      "host": {
+        "name": "Alice",
+        "email": "alice@example.com",
+        "avatarUrl": "https://example.com/avatars/alice.jpg",
+        "password": "alice123",
+        "type": "pro"
       },
-      {
-        "id": 2,
-        "title": "Cozy Loft in Hamburg",
-        "description": "A modern loft for business travelers and tourists alike.",
-        "postedDate": "2023-09-02T08:30:00.000Z",
-        "city": "Hamburg",
-        "previewImage": "https://example.com/image-preview2.jpg",
-        "images": [
-          "https://example.com/hamburg1.jpg",
-          "https://example.com/hamburg2.jpg",
-          "https://example.com/hamburg3.jpg",
-          "https://example.com/hamburg4.jpg",
-          "https://example.com/hamburg5.jpg",
-          "https://example.com/hamburg6.jpg"
-        ],
-        "isPremium": false,
-        "isFavorite": false,
-        "rating": 4.0,
-        "type": "room",
-        "roomsCount": 1,
-        "guestsCount": 1,
-        "price": 80,
-        "amenities": ["Towels", "Laptop friendly workspace"],
-        "author": {
-          "name": "Bob",
-          "email": "bob@example.com",
-          "avatarPath": "https://example.com/avatar-bob.jpg",
-          "password": "bob123",
-          "userType": "usual"
-        },
-        "commentsCount": 2,
-        "location": {
-          "latitude": 53.550341,
-          "longitude": 10.000654
-        }
-      },
-      {
-        "id": 3,
-        "title": "Spacious Apartment in Brussels",
-        "description": "Perfect for a city break with friends or family in Brussels.",
-        "postedDate": "2023-08-15T09:00:00.000Z",
-        "city": "Brussels",
-        "previewImage": "https://example.com/image-preview3.jpg",
-        "images": [
-          "https://example.com/brussels1.jpg",
-          "https://example.com/brussels2.jpg",
-          "https://example.com/brussels3.jpg",
-          "https://example.com/brussels4.jpg",
-          "https://example.com/brussels5.jpg",
-          "https://example.com/brussels6.jpg"
-        ],
-        "isPremium": true,
-        "isFavorite": true,
-        "rating": 4.7,
-        "type": "house",
-        "roomsCount": 3,
-        "guestsCount": 5,
-        "price": 220,
-        "amenities": ["Breakfast", "Air conditioning", "Baby seat", "Fridge"],
-        "author": {
-          "name": "Charlie",
-          "email": "charlie@example.com",
-          "avatarPath": "https://example.com/avatar-charlie.jpg",
-          "password": "charlie123",
-          "userType": "pro"
-        },
-        "commentsCount": 1,
-        "location": {
-          "latitude": 50.846557,
-          "longitude": 4.351697
-        }
-      },
-      {
-        "id": 4,
-        "title": "Modern Hotel Room in Dusseldorf",
-        "description": "Conveniently located hotel room for short stays or business trips.",
-        "postedDate": "2023-07-20T11:15:00.000Z",
-        "city": "Dusseldorf",
-        "previewImage": "https://example.com/image-preview4.jpg",
-        "images": [
-          "https://example.com/dusseldorf1.jpg",
-          "https://example.com/dusseldorf2.jpg",
-          "https://example.com/dusseldorf3.jpg",
-          "https://example.com/dusseldorf4.jpg",
-          "https://example.com/dusseldorf5.jpg",
-          "https://example.com/dusseldorf6.jpg"
-        ],
-        "isPremium": false,
-        "isFavorite": false,
-        "rating": 3.8,
-        "type": "hotel",
-        "roomsCount": 2,
-        "guestsCount": 4,
-        "price": 99,
-        "amenities": ["Towels", "Washer", "Fridge"],
-        "author": {
-          "name": "Diane",
-          "email": "diane@example.com",
-          "avatarPath": "https://example.com/avatar-diane.jpg",
-          "password": "diane123",
-          "userType": "usual"
-        },
-        "commentsCount": 0,
-        "location": {
-          "latitude": 51.225402,
-          "longitude": 6.776314
-        }
-      },
-      {
-        "id": 5,
-        "title": "Historic Canal View in Amsterdam",
-        "description": "Experience the charm of Amsterdam with a direct canal view.",
-        "postedDate": "2023-09-03T12:00:00.000Z",
-        "city": "Amsterdam",
-        "previewImage": "https://example.com/image-preview5.jpg",
-        "images": [
-          "https://example.com/amsterdam1.jpg",
-          "https://example.com/amsterdam2.jpg",
-          "https://example.com/amsterdam3.jpg",
-          "https://example.com/amsterdam4.jpg",
-          "https://example.com/amsterdam5.jpg",
-          "https://example.com/amsterdam6.jpg"
-        ],
-        "isPremium": false,
-        "isFavorite": true,
-        "rating": 4.5,
-        "type": "apartment",
-        "roomsCount": 2,
-        "guestsCount": 3,
-        "price": 150,
-        "amenities": ["Breakfast", "Laptop friendly workspace", "Towels"],
-        "author": {
-          "name": "Eve",
-          "email": "eve@example.com",
-          "avatarPath": "https://example.com/avatar-eve.jpg",
-          "password": "eve123",
-          "userType": "pro"
-        },
-        "commentsCount": 4,
-        "location": {
-          "latitude": 52.370216,
-          "longitude": 4.895168
-        }
+      "commentCount": 0,
+      "coordinates": {
+        "latitude": 48.85661,
+        "longitude": 2.351499
       }
-    ]
-  }
-  
+    },
+    {
+      "title": "Cozy Loft in Hamburg",
+      "description": "A modern loft for business travelers and tourists alike, close to the Elbe River and the historic Speicherstadt.",
+      "postDate": "2023-09-02T08:30:00.000Z",
+      "city": "Hamburg",
+      "previewImage": "https://example.com/image-preview2.jpg",
+      "images": [
+        "https://example.com/hamburg1.jpg",
+        "https://example.com/hamburg2.jpg",
+        "https://example.com/hamburg3.jpg",
+        "https://example.com/hamburg4.jpg",
+        "https://example.com/hamburg5.jpg",
+        "https://example.com/hamburg6.jpg"
+      ],
+      "isPremium": false,
+      "isFavorite": false,
+      "rating": 4.0,
+      "type": "room",
+      "bedrooms": 1,
+      "maxAdults": 1,
+      "price": 800,
+      "goods": ["Towels", "Laptop friendly workspace"],
+      "host": {
+        "name": "Bob",
+        "email": "bob@example.com",
+        "avatarUrl": "https://example.com/avatars/bob.jpg",
+        "password": "bob123",
+        "type": "regular"
+      },
+      "commentCount": 2,
+      "coordinates": {
+        "latitude": 53.550341,
+        "longitude": 10.000654
+      }
+    },
+    {
+      "title": "Spacious Apartment in Brussels",
+      "description": "Perfect for a city break with friends or family in Brussels, with a balcony overlooking the Grand-Place.",
+      "postDate": "2023-08-15T09:00:00.000Z",
+      "city": "Brussels",
+      "previewImage": "https://example.com/image-preview3.jpg",
+      "images": [
+        "https://example.com/brussels1.jpg",
+        "https://example.com/brussels2.jpg",
+        "https://example.com/brussels3.jpg",
+        "https://example.com/brussels4.jpg",
+        "https://example.com/brussels5.jpg",
+        "https://example.com/brussels6.jpg"
+      ],
+      "isPremium": true,
+      "isFavorite": true,
+      "rating": 4.7,
+      "type": "house",
+      "bedrooms": 3,
+      "maxAdults": 5,
+      "price": 220,
+      "goods": ["Breakfast", "Air conditioning", "Baby seat", "Fridge"],
+      "host": {
+        "name": "Charlie",
+        "email": "charlie@example.com",
+        "avatarUrl": "https://example.com/avatars/charlie.jpg",
+        "password": "charlie123",
+        "type": "pro"
+      },
+      "commentCount": 1,
+      "coordinates": {
+        "latitude": 50.846557,
+        "longitude": 4.351697
+      }
+    },
+    {
+      "title": "Modern Hotel Room in Dusseldorf",
+      "description": "Conveniently located hotel room for short stays or business trips, near the Königsallee shopping district.",
+      "postDate": "2023-07-20T11:15:00.000Z",
+      "city": "Dusseldorf",
+      "previewImage": "https://example.com/image-preview4.jpg",
+      "images": [
+        "https://example.com/dusseldorf1.jpg",
+        "https://example.com/dusseldorf2.jpg",
+        "https://example.com/dusseldorf3.jpg",
+        "https://example.com/dusseldorf4.jpg",
+        "https://example.com/dusseldorf5.jpg",
+        "https://example.com/dusseldorf6.jpg"
+      ],
+      "isPremium": false,
+      "isFavorite": false,
+      "rating": 3.8,
+      "type": "hotel",
+      "bedrooms": 2,
+      "maxAdults": 4,
+      "price": 100,
+      "goods": ["Towels", "Washer", "Fridge"],
+      "host": {
+        "name": "Diane",
+        "email": "diane@example.com",
+        "avatarUrl": "https://example.com/avatars/diane.jpg",
+        "password": "diane123",
+        "type": "regular"
+      },
+      "commentCount": 0,
+      "coordinates": {
+        "latitude": 51.225402,
+        "longitude": 6.776314
+      }
+    },
+    {
+      "title": "Historic Canal View in Amsterdam",
+      "description": "Experience the charm of Amsterdam with a direct canal view and easy access to museums and cafés.",
+      "postDate": "2023-09-03T12:00:00.000Z",
+      "city": "Amsterdam",
+      "previewImage": "https://example.com/image-preview5.jpg",
+      "images": [
+        "https://example.com/amsterdam1.jpg",
+        "https://example.com/amsterdam2.jpg",
+        "https://example.com/amsterdam3.jpg",
+        "https://example.com/amsterdam4.jpg",
+        "https://example.com/amsterdam5.jpg",
+        "https://example.com/amsterdam6.jpg"
+      ],
+      "isPremium": false,
+      "isFavorite": true,
+      "rating": 4.5,
+      "type": "apartment",
+      "bedrooms": 2,
+      "maxAdults": 3,
+      "price": 150,
+      "goods": ["Breakfast", "Laptop friendly workspace", "Towels"],
+      "host": {
+        "name": "Eve",
+        "email": "eve@example.com",
+        "avatarUrl": "https://example.com/avatars/eve.jpg",
+        "password": "eve123",
+        "type": "pro"
+      },
+      "commentCount": 4,
+      "coordinates": {
+        "latitude": 52.370216,
+        "longitude": 4.895168
+      }
+    }
+  ]
+}

@@ -1,3 +1,5 @@
+import { City, HousingType, Good } from './modules/offer/offer.enum.js';
+
 export type UserType = 'usual' | 'pro';
 
 export const TYPES = {
@@ -28,25 +30,26 @@ export interface User {
 export interface Offer {
   title: string;
   description: string;
-  postedDate: Date;
-  city: string;
+  postDate: Date;
+  city: City;
   previewImage: string;
   images: string[];
   isPremium: boolean;
   isFavorite: boolean;
   rating: number;
-  type: 'apartment' | 'house' | 'room' | 'hotel';
-  roomsCount: number;
-  guestsCount: number;
+  type: HousingType;
+  bedrooms: number;
+  maxAdults: number;
   price: number;
-  amenities: string[];
-  author: User;
-  commentsCount: number;
-  location: {
+  goods: Good[];
+  host: User;
+  commentCount: number;
+  coordinates: {
     latitude: number;
     longitude: number;
   };
 }
+
 
 export interface Comment {
   text: string;
