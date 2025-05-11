@@ -19,12 +19,28 @@ class Coordinates {
     public longitude!: number;
 }
 
-  @modelOptions({
-    schemaOptions: {
-      collection : 'offers',
-      timestamps : true,
+@modelOptions({
+  schemaOptions: {
+    collection: 'offers',
+    timestamps: true,
+    toJSON: {
+      transform: (_, ret) => {
+        ret.id = ret._id?.toString();
+        delete ret._id;
+        delete ret.__v;
+      },
+      virtuals: true
     },
-  })
+    toObject: {
+      transform: (_, ret) => {
+        ret.id = ret._id?.toString();
+        delete ret._id;
+        delete ret.__v;
+      },
+      virtuals: true
+    }
+  }
+})
 export class OfferEntity {
     @prop({ required: true, minlength: 10, maxlength: 100 })
   public title!: string;

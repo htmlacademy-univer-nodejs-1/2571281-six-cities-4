@@ -4,6 +4,11 @@ import { DatabaseRepositoryInterface } from '../../common/database.repository.in
 
 export interface OfferServiceInterface
   extends DatabaseRepositoryInterface<OfferEntity, CreateOfferDto> {
-  incCommentCount(offerId: string, newRating: number): Promise<void>;
-  findPremiumByCity(city: string, limit?: number): Promise<OfferEntity[]>;
+    create(dto: CreateOfferDto): Promise<OfferEntity>;
+    findById(id: string): Promise<OfferEntity | null>;
+    list(limit?: number): Promise<OfferEntity[]>;
+    updateById(id: string, dto: Partial<CreateOfferDto>): Promise<OfferEntity | null>;
+    deleteById(id: string): Promise<boolean>;
+    incCommentCount(offerId: string, newRating: number): Promise<void>;
+    findPremiumByCity(city: string, limit?: number): Promise<OfferEntity[]>;
 }
