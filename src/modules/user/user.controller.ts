@@ -45,6 +45,9 @@ export class UserController extends Controller {
     await this.userService.updateAvatar(newUser._id, avatarUrl);
     newUser.avatarUrl = avatarUrl;
 
-    this.created(res, plainToInstance(UserResponseDto, newUser));
+    this.created(
+      res,
+      plainToInstance(UserResponseDto, newUser, { excludeExtraneousValues: true })
+    );
   }
 }
