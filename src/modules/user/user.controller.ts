@@ -41,11 +41,9 @@ export class UserController extends Controller {
 
     const newUser = await this.userService.create(createDto);
 
-    if (file) {
-      const avatarUrl = `/static/${file.filename}`;
-      await this.userService.updateAvatar(newUser._id, avatarUrl);
-      newUser.avatarUrl = avatarUrl;
-    }
+    const avatarUrl = file ? `/static/${file.filename}` : '/static/default-avatar.png';
+    await this.userService.updateAvatar(newUser._id, avatarUrl);
+    newUser.avatarUrl = avatarUrl;
 
     this.created(res, plainToInstance(UserResponseDto, newUser));
   }
