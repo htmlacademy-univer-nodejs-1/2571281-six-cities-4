@@ -46,7 +46,7 @@ export class OfferService implements OfferServiceInterface {
 
   public async findPremiumByCity(
     city: string,
-    limit = 10,
+    limit = 3,
   ): Promise<OfferEntity[]> {
     return this.offerModel
       .find({ city, isPremium: true })
