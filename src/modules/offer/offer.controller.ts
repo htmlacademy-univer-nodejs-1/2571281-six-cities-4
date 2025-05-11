@@ -66,7 +66,7 @@ export class OfferController extends Controller {
     { query }: Request<unknown, unknown, unknown, { limit?: string }>,
     res: Response,
   ): Promise<void> {
-    const limit = query.limit ? Number(query.limit) : undefined;
+    const limit = query.limit ? Number(query.limit) : 60;
     const offers = await this.offerService.list(limit);
     this.ok(res, offers);
   }
