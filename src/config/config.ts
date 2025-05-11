@@ -11,6 +11,7 @@ export type AppSchema = {
   DB_HOST: string;
   SALT: string;
   MONGO_URI: string;
+  UPLOAD_DIR: string;
 };
 
 export const appConfig = convict({
@@ -37,6 +38,12 @@ export const appConfig = convict({
     format: String,
     default: 'mongodb://127.0.0.1:27017/six-cities',
     env: 'MONGO_URI',
+  },
+  UPLOAD_DIR: {
+    doc: 'Filesystem path for storing user-uploaded files',
+    format: String,
+    default: './uploads',
+    env: 'UPLOAD_DIR',
   },
 });
 

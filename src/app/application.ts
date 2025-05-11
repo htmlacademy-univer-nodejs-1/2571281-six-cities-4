@@ -11,6 +11,7 @@ import { OfferController } from '../modules/offer/offer.controller.js';
 import { FavoriteController } from '../modules/favorite/favorite.controller.js';
 import { ExceptionFilter } from '../common/errors/exception.filter.js';
 import { CommentController } from '../modules/comment/comment.controller.js';
+import path from 'node:path';
 
 
 @injectable()
@@ -40,6 +41,11 @@ export class Application {
       container.get(CommentController)
     );
     this.registerControllers();
+
+    this.app.use(
+      '/static',
+      express.static(path.resolve(this.config.get('UPLOAD_DIR'))),
+    );
 
     this.app.use(this.exceptionFilter.catch);
 

@@ -3,18 +3,20 @@ import { inject, injectable } from 'inversify';
 
 import { Controller } from '../../common/controller/controller.js';
 import { HttpMethod } from '../../common/http-method.enum.js';
-import { CreateUserDto, UserType } from './create-user.dto.js';
+import { CreateUserDto } from './create-user.dto.js';
 import { UserService } from './user.service.js';
 import { TYPES } from '../../types.js';
 import { UserResponseDto } from './user-response.dto.js';
-import { RegisterUserDto } from './register-user.dto.js';
 import { plainToInstance } from 'class-transformer';
 import { validateDto } from '../../app/middleware/validate-dto.middleware.js';
+import { buildUploadMiddleware } from '../../app/middleware/upload-file.middleware.js';
+import { ConfigService } from '../../config/config.service.js';
 
 @injectable()
 export class UserController extends Controller {
   constructor(
     @inject(TYPES.UserService) private readonly userService: UserService,
+    @inject(TYPES.Config) private readonly config: ConfigService,
   ) {
     super();
 
@@ -22,23 +24,28 @@ export class UserController extends Controller {
       path: '/users',
       method: HttpMethod.Post,
       handler: this.register,
-      middlewares: [validateDto(CreateUserDto)]
+      middlewares: [
+        buildUploadMiddleware(this.config),
+        validateDto(CreateUserDto),
+      ],
     });
   }
 
   private async register(
-    { body }: Request<unknown, unknown, RegisterUserDto>,
-    res: Response
+    req: Request<unknown, unknown, CreateUserDto>,
+    res: Response,
   ): Promise<void> {
-    const createDto: CreateUserDto = {
-      name: body.name,
-      email: body.email,
-      password: body.password,
-      avatarUrl: body.avatarUrl,
-      type: body.type ?? UserType.Regular,
-    };
+    const { body, file } = req;
+
+    const createDto: CreateUserDto = { ...body };
 
     const newUser = await this.userService.create(createDto);
+
+    if (file) {
+      const avatarUrl = `/static/${file.filename}`;
+      await this.userService.updateAvatar(newUser._id, avatarUrl);
+      newUser.avatarUrl = avatarUrl;
+    }
 
     this.created(res, plainToInstance(UserResponseDto, newUser));
   }

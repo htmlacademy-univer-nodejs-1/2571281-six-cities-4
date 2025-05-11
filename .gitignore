@@ -1,4 +1,5 @@
 .vscode/
+/uploads
 /node_modules/
 /build/
 /lib/

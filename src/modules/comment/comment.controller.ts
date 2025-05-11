@@ -7,6 +7,9 @@ import { CommentServiceInterface } from './comment.service.interface.js';
 import { CreateCommentDto } from './create-comment.dto.js';
 import { HttpError } from '../../common/errors/http-error.js';
 import { validateObjectId } from '../../app/middleware/validate-objectid.middleware.js';
+import { checkExists } from '../../app/middleware/check-exists.middleware.js';
+import { OfferServiceInterface } from '../offer/offer.service.interface.js';
+import { UserServiceInterface } from '../user/user.service.interface.js';
 import { validateDto } from '../../app/middleware/validate-dto.middleware.js';
 
 @injectable()
@@ -14,6 +17,8 @@ export class CommentController extends Controller {
   constructor(
     @inject(TYPES.CommentService)
     private readonly commentService: CommentServiceInterface,
+    @inject(TYPES.OfferService) private readonly offerService: OfferServiceInterface,
+    @inject(TYPES.UserService) private readonly userService: UserServiceInterface,
   ) {
     super();
 
@@ -21,14 +26,18 @@ export class CommentController extends Controller {
       path: '/offers/:offerId/comments',
       method: HttpMethod.Get,
       handler: this.index,
-      middlewares: [validateObjectId('offerId')]
+      middlewares: [validateObjectId('offerId'), checkExists('offerId', this.offerService, 'Offer')]
     });
 
     this.addRoute({
       path: '/offers/:offerId/comments/:userId',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [validateObjectId('offerId'), validateObjectId('userId'), validateDto(CreateCommentDto)]
+      middlewares: [validateObjectId('offerId'),
+        validateObjectId('userId'),
+        validateDto(CreateCommentDto),
+        checkExists('userId', this.userService, 'User'),
+        checkExists('offerId', this.offerService, 'Offer')]
     });
   }
 
