@@ -18,6 +18,7 @@ import { OfferController } from '../modules/offer/offer.controller.js';
 import { FavoriteController } from '../modules/favorite/favorite.controller.js';
 import { AuthController } from '../modules/auth/auth.controller.js';
 import { ExceptionFilter } from '../common/errors/exception.filter.js';
+import { CommentController } from '../modules/comment/comment.controller.js';
 
 const container = new Container();
 
@@ -61,6 +62,7 @@ container.bind<UserController>(UserController).toSelf().inSingletonScope();
 container.bind<OfferController>(OfferController).toSelf().inSingletonScope();
 container.bind(FavoriteController).toSelf().inSingletonScope();
 container.bind(AuthController).toSelf().inSingletonScope();
+container.bind(CommentController).toSelf().inSingletonScope();
 
 container
   .bind<ExceptionFilter>(TYPES.ExceptionFilter)
