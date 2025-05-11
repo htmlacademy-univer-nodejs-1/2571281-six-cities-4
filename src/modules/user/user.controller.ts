@@ -24,6 +24,7 @@ export class UserController extends Controller {
       path: '/users',
       method: HttpMethod.Post,
       handler: this.register,
+      middlewares: []
     });
   }
 

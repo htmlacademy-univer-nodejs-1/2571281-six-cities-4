@@ -10,6 +10,7 @@ export class HelloController extends Controller {
       path: '/hello',
       method: HttpMethod.Get,
       handler: this.index,
+      middlewares: []
     });
   }
 

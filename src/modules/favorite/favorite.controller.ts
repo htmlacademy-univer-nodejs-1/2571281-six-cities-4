@@ -18,18 +18,21 @@ export class FavoriteController extends Controller {
       path: '/favorites/:userId',
       method: HttpMethod.Get,
       handler: this.list,
+      middlewares: []
     });
 
     this.addRoute({
       path: '/favorites/:userId/:offerId',
       method: HttpMethod.Post,
       handler: this.add,
+      middlewares: []
     });
 
     this.addRoute({
       path: '/favorites/:userId/:offerId',
       method: HttpMethod.Delete,
       handler: this.remove,
+      middlewares: []
     });
   }
 

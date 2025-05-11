@@ -20,33 +20,39 @@ export class OfferController extends Controller {
       path: '/offers',
       method: HttpMethod.Get,
       handler: this.index,
+      middlewares: []
     });
     this.addRoute({
       path: '/offers',
       method: HttpMethod.Post,
       handler: this.create,
+      middlewares: []
     });
 
     this.addRoute({
       path: '/offers/:offerId',
       method: HttpMethod.Get,
       handler: this.show,
+      middlewares: []
     });
     this.addRoute({
       path: '/offers/:offerId',
       method: HttpMethod.Patch,
       handler: this.update,
+      middlewares: []
     });
     this.addRoute({
       path: '/offers/:offerId',
       method: HttpMethod.Delete,
       handler: this.delete,
+      middlewares: []
     });
 
     this.addRoute({
       path: '/cities/:city/offers/premium',
       method: HttpMethod.Get,
       handler: this.cityPremium,
+      middlewares: []
     });
   }
 

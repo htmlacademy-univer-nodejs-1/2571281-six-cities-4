@@ -1,14 +1,9 @@
 import {
+  RequestHandler,
   Router,
-  //   type Request,
   type Response,
-//   type NextFunction,
 } from 'express';
-import expressAsyncHandler from 'express-async-handler';
 import { StatusCodes } from 'http-status-codes';
-// import { instanceToPlain } from 'class-transformer';
-
-// import { HttpMethod } from '../http-method.enum.js';
 import { RouteInterface } from '../route.interface.js';
 
 export abstract class Controller {
@@ -22,8 +17,16 @@ export abstract class Controller {
     handler,
     middlewares = [],
   }: RouteInterface): void {
-    const boundHandler = expressAsyncHandler(handler.bind(this));
-    this.router[method](path, ...middlewares, boundHandler);
+    const boundHandler = handler.bind(this);
+    const routeKey = method.toLowerCase() as keyof Router;
+    (this.router[routeKey] as unknown as (
+      path: string | RegExp,
+      ...handlers: RequestHandler[]
+    ) => Router)(
+      path,
+      ...middlewares,
+      boundHandler,
+    );
   }
 
   protected ok<T>(res: Response<T>, payload?: T): void {

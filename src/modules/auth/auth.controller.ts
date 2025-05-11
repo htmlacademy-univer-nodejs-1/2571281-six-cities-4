@@ -19,6 +19,7 @@ export class AuthController extends Controller {
       path: '/auth/login',
       method: HttpMethod.Post,
       handler: this.login,
+      middlewares: []
     });
   }
 

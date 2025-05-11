@@ -18,12 +18,14 @@ export class CommentController extends Controller {
       path: '/offers/:offerId/comments',
       method: HttpMethod.Get,
       handler: this.index,
+      middlewares: []
     });
 
     this.addRoute({
       path: '/offers/:offerId/comments/:userId',
       method: HttpMethod.Post,
       handler: this.create,
+      middlewares: []
     });
   }
 
