@@ -85,7 +85,7 @@ export class OfferEntity {
     public goods!: Good[];
 
     @prop({ required: true, ref: () => UserEntity })
-    public hostId!: Ref<UserEntity>;
+    public host!: Ref<UserEntity>;
 
     @prop({ default: 0 })
     public commentCount!: number;

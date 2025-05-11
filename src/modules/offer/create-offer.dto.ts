@@ -35,11 +35,6 @@ export class CreateOfferDto {
   @IsBoolean()
   public isPremium!: boolean;
 
-  @IsNumber({ maxDecimalPlaces: 1 })
-  @Min(1)
-  @Max(5)
-  public rating!: number;
-
   @IsEnum(HousingType)
   public type!: HousingType;
 

@@ -10,12 +10,15 @@ import { HttpError } from '../../common/errors/http-error.js';
 import { validateObjectId } from '../../app/middleware/validate-objectid.middleware.js';
 import { validateDto } from '../../app/middleware/validate-dto.middleware.js';
 import { checkExists } from '../../app/middleware/check-exists.middleware.js';
+import { CommentServiceInterface } from '../comment/comment.service.interface.js';
 
 @injectable()
 export class OfferController extends Controller {
   constructor(
     @inject(TYPES.OfferService)
     private readonly offerService: OfferServiceInterface,
+    @inject(TYPES.CommentService)
+    private readonly commentService: CommentServiceInterface,
   ) {
     super();
 
@@ -63,7 +66,7 @@ export class OfferController extends Controller {
     { query }: Request<unknown, unknown, unknown, { limit?: string }>,
     res: Response,
   ): Promise<void> {
-    const limit = query.limit ? Number(query.limit) : undefined;
+    const limit = query.limit ? Number(query.limit) : 60;
     const offers = await this.offerService.list(limit);
     this.ok(res, offers);
   }
@@ -94,6 +97,7 @@ export class OfferController extends Controller {
   private async delete(req: Request, res: Response): Promise<void> {
     const { offerId } = req.params as { offerId: string };
     await this.offerService.deleteById(offerId);
+    this.commentService.deleteByOffer(offerId);
     this.noContent(res);
   }
 

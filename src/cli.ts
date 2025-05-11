@@ -58,10 +58,10 @@ export async function importData(filePath: string, mongoUri: string): Promise<vo
       try {
         const tokens = rawLine.split('\t');
         const userDto: CreateUserDto = {
-          name     : tokens[14].trim(),
-          email    : tokens[15].trim(),
-          avatarUrl   : tokens[16].trim(),
-          type : tokens[17].trim() === 'pro' ? UserType.Pro : UserType.Regular,
+          name     : tokens[11].trim(),
+          email    : tokens[12].trim(),
+          avatarUrl   : '',
+          type : UserType.Regular,
           password : '123456',
         };
 

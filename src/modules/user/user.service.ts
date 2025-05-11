@@ -5,6 +5,7 @@ import { LoggerInterface } from '../../libs/logger.interface.js';
 import { UserEntity, UserModel } from './index.js';
 import { CreateUserDto } from './create-user.dto.js';
 import { Types } from 'mongoose';
+import { createHmac } from 'node:crypto';
 
 @injectable()
 export class UserService implements UserServiceInterface {
@@ -18,10 +19,21 @@ export class UserService implements UserServiceInterface {
     this.logger.info(`[User] avatar updated for user ${userId.toHexString()}`);
   }
 
+
   public async create(dto: CreateUserDto): Promise<UserEntity> {
-    const user = await this.userModel.create(dto);
+    const salt = process.env.SALT ?? 'default_salt';
+    const hashedPassword = createHmac('sha256', salt)
+      .update(dto.password)
+      .digest('hex');
+
+    const user = await this.userModel.create({
+      ...dto,
+      password: hashedPassword,
+    });
+
     this.logger.info(`[User] created: ${user.id}`);
-    return user;
+
+    return user as UserEntity;
   }
 
   public findById(id: string): Promise<UserEntity | null> {

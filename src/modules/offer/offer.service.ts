@@ -4,6 +4,7 @@ import { TYPES } from '../../types.js';
 import { LoggerInterface } from '../../libs/logger.interface.js';
 import { OfferEntity, OfferModel } from './index.js';
 import { CreateOfferDto } from './create-offer.dto.js';
+import { Types } from 'mongoose';
 
 @injectable()
 export class OfferService implements OfferServiceInterface {
@@ -13,7 +14,11 @@ export class OfferService implements OfferServiceInterface {
   ) {}
 
   public async create(dto: CreateOfferDto): Promise<OfferEntity> {
-    const offer = await this.offerModel.create(dto);
+    const offer = await this.offerModel.create({
+      ...dto,
+      host: new Types.ObjectId(dto.hostId),
+      rating: 5,
+    });
     this.logger.info(`[Offer] created: ${offer.id}`);
     return offer;
   }
@@ -41,7 +46,7 @@ export class OfferService implements OfferServiceInterface {
 
   public async findPremiumByCity(
     city: string,
-    limit = 10,
+    limit = 3,
   ): Promise<OfferEntity[]> {
     return this.offerModel
       .find({ city, isPremium: true })

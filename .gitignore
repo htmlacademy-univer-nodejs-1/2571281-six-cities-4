@@ -1,5 +1,6 @@
 .vscode/
-/uploads
+/uploads/*
+!/uploads/default-avatar.png
 /node_modules/
 /build/
 /lib/

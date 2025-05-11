@@ -1,9 +1,5 @@
 import { IsString, Length, IsEmail, IsOptional, IsEnum } from 'class-validator';
-
-export enum UserType {
-  Regular = 'regular',
-  Pro = 'pro',
-}
+import { UserType } from './user.enum.js';
 
 export class CreateUserDto {
   @IsString()
