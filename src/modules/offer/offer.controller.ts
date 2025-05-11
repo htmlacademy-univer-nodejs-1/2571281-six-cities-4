@@ -9,6 +9,7 @@ import { CreateOfferDto } from './create-offer.dto.js';
 import { HttpError } from '../../common/errors/http-error.js';
 import { validateObjectId } from '../../app/middleware/validate-objectid.middleware.js';
 import { validateDto } from '../../app/middleware/validate-dto.middleware.js';
+import { checkExists } from '../../app/middleware/check-exists.middleware.js';
 
 @injectable()
 export class OfferController extends Controller {
@@ -35,19 +36,19 @@ export class OfferController extends Controller {
       path: '/offers/:offerId',
       method: HttpMethod.Get,
       handler: this.show,
-      middlewares: [validateObjectId('offerId')]
+      middlewares: [validateObjectId('offerId'), checkExists('offerId', this.offerService, 'Offer'), ]
     });
     this.addRoute({
       path: '/offers/:offerId',
       method: HttpMethod.Patch,
       handler: this.update,
-      middlewares: [validateObjectId('offerId')]
+      middlewares: [validateObjectId('offerId'), checkExists('offerId', this.offerService, 'Offer'), ]
     });
     this.addRoute({
       path: '/offers/:offerId',
       method: HttpMethod.Delete,
       handler: this.delete,
-      middlewares: [validateObjectId('offerId')]
+      middlewares: [validateObjectId('offerId'), checkExists('offerId', this.offerService, 'Offer'), ]
     });
 
     this.addRoute({
@@ -87,18 +88,12 @@ export class OfferController extends Controller {
   private async update(req: Request, res: Response): Promise<void> {
     const { offerId } = req.params as { offerId: string };
     const updated = await this.offerService.updateById(offerId, req.body);
-    if (!updated) {
-      throw new HttpError(404, 'Offer not found', { offerId });
-    }
     this.ok(res, updated);
   }
 
   private async delete(req: Request, res: Response): Promise<void> {
     const { offerId } = req.params as { offerId: string };
-    const removed = await this.offerService.deleteById(offerId);
-    if (!removed) {
-      throw new HttpError(404, 'Offer not found', { offerId });
-    }
+    await this.offerService.deleteById(offerId);
     this.noContent(res);
   }
 

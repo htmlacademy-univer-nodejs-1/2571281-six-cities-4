@@ -7,11 +7,16 @@ import { TYPES } from '../../types.js';
 
 import type { FavoriteServiceInterface } from './favorite.service.interface.js';
 import { validateObjectId } from '../../app/middleware/validate-objectid.middleware.js';
+import { checkExists } from '../../app/middleware/check-exists.middleware.js';
+import { UserServiceInterface } from '../user/user.service.interface.js';
+import { OfferServiceInterface } from '../offer/offer.service.interface.js';
 
 @injectable()
 export class FavoriteController extends Controller {
   constructor(
     @inject(TYPES.FavoriteService) private readonly favoriteService: FavoriteServiceInterface,
+    @inject(TYPES.UserService) private readonly userService: UserServiceInterface,
+    @inject(TYPES.OfferService) private readonly offerService: OfferServiceInterface,
   ) {
     super();
 
@@ -19,21 +24,27 @@ export class FavoriteController extends Controller {
       path: '/favorites/:userId',
       method: HttpMethod.Get,
       handler: this.list,
-      middlewares: [validateObjectId('userId')]
+      middlewares: [validateObjectId('userId'), checkExists('userId', this.userService, 'User')]
     });
 
     this.addRoute({
       path: '/favorites/:userId/:offerId',
       method: HttpMethod.Post,
       handler: this.add,
-      middlewares: [validateObjectId('offerId'), validateObjectId('userId')]
+      middlewares: [validateObjectId('offerId'),
+        validateObjectId('userId'),
+        checkExists('userId', this.userService, 'User'),
+        checkExists('offerId', this.offerService, 'Offer')]
     });
 
     this.addRoute({
       path: '/favorites/:userId/:offerId',
       method: HttpMethod.Delete,
       handler: this.remove,
-      middlewares: [validateObjectId('offerId'), validateObjectId('userId')]
+      middlewares: [validateObjectId('offerId'),
+        validateObjectId('userId'),
+        checkExists('userId', this.userService, 'User'),
+        checkExists('offerId', this.offerService, 'Offer')]
     });
   }
 
