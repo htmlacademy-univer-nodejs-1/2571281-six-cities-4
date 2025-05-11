@@ -21,7 +21,7 @@ export class UserEntity {
   public avatarUrl?: string;
 
   @prop({ required: true })
-  public passwordHash!: string;
+  public password!: string;
 
   @prop({ required: true, enum: UserType, default: UserType.Regular })
   public type!: UserType;

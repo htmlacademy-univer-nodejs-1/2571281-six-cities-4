@@ -9,7 +9,6 @@ import { container } from '../di/container.js';
 import { UserController } from '../modules/user/user.controller.js';
 import { OfferController } from '../modules/offer/offer.controller.js';
 import { FavoriteController } from '../modules/favorite/favorite.controller.js';
-import { AuthController } from '../modules/auth/auth.controller.js';
 import { ExceptionFilter } from '../common/errors/exception.filter.js';
 import { CommentController } from '../modules/comment/comment.controller.js';
 
@@ -38,7 +37,6 @@ export class Application {
       container.get(UserController),
       container.get(OfferController),
       container.get(FavoriteController),
-      container.get(AuthController),
       container.get(CommentController)
     );
     this.registerControllers();

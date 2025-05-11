@@ -1,7 +1,12 @@
-import { IsString, Length } from 'class-validator';
+import { IsString, Length, IsInt, Min, Max } from 'class-validator';
 
 export class CreateCommentDto {
   @IsString()
-  @Length(20, 1024)
-    text!: string;
+  @Length(5, 1024)
+  public text!: string;
+
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  public rating!: number;
 }

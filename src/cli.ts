@@ -62,7 +62,7 @@ export async function importData(filePath: string, mongoUri: string): Promise<vo
           email    : tokens[15].trim(),
           avatarUrl   : tokens[16].trim(),
           type : tokens[17].trim() === 'pro' ? UserType.Pro : UserType.Regular,
-          passwordHash : 'pass_hash',
+          password : '123456',
         };
 
         let host = await userService.findByEmail(userDto.email);
@@ -71,7 +71,7 @@ export async function importData(filePath: string, mongoUri: string): Promise<vo
         }
 
         const offerDto = parseOffer(rawLine);
-        offerDto.host = host._id.toString();
+        offerDto.hostId = host._id.toString();
         await offerService.create(offerDto);
       } catch (err) {
         logger.warn(`Skipping bad row → ${(err as Error).message}`);
