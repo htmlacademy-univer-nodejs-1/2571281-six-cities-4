@@ -4,6 +4,7 @@ import { TYPES } from '../../types.js';
 import { LoggerInterface } from '../../libs/logger.interface.js';
 import { UserEntity, UserModel } from './index.js';
 import { CreateUserDto } from './create-user.dto.js';
+import { Types } from 'mongoose';
 
 @injectable()
 export class UserService implements UserServiceInterface {
@@ -11,6 +12,11 @@ export class UserService implements UserServiceInterface {
     @inject(TYPES.Logger) private readonly logger: LoggerInterface,
     @inject(TYPES.UserModel) private readonly userModel: typeof UserModel,
   ) {}
+
+  public async updateAvatar(userId: Types.ObjectId, avatarUrl: string): Promise<void> {
+    await this.userModel.updateOne({ _id: userId }, { avatarUrl }).exec();
+    this.logger.info(`[User] avatar updated for user ${userId.toHexString()}`);
+  }
 
   public async create(dto: CreateUserDto): Promise<UserEntity> {
     const user = await this.userModel.create(dto);
