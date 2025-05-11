@@ -8,6 +8,7 @@ import { OfferServiceInterface } from './offer.service.interface.js';
 import { CreateOfferDto } from './create-offer.dto.js';
 import { HttpError } from '../../common/errors/http-error.js';
 import { validateObjectId } from '../../app/middleware/validate-objectid.middleware.js';
+import { validateDto } from '../../app/middleware/validate-dto.middleware.js';
 
 @injectable()
 export class OfferController extends Controller {
@@ -27,7 +28,7 @@ export class OfferController extends Controller {
       path: '/offers',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: []
+      middlewares: [validateDto(CreateOfferDto)]
     });
 
     this.addRoute({
