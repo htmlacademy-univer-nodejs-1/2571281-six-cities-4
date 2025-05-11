@@ -17,6 +17,7 @@ export class OfferService implements OfferServiceInterface {
     const offer = await this.offerModel.create({
       ...dto,
       host: new Types.ObjectId(dto.hostId),
+      rating: 5,
     });
     this.logger.info(`[Offer] created: ${offer.id}`);
     return offer;

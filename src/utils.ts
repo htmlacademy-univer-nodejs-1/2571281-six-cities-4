@@ -85,9 +85,9 @@ export async function writeOffersToTSV(
 export function parseOffer(line: string): CreateOfferDto {
   const tokens = line.replace(/\r?\n$/, '').split('\t');
 
-  if (tokens.length !== 19) {
+  if (tokens.length !== 15) {
     throw new Error(
-      `Malformed TSV row (${tokens.length} columns, expected 19):\n${line}`
+      `Malformed TSV row (${tokens.length} columns, expected 15):\n${line}`
     );
   }
 
