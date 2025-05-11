@@ -7,6 +7,7 @@ import { TYPES } from '../../types.js';
 import { OfferServiceInterface } from './offer.service.interface.js';
 import { CreateOfferDto } from './create-offer.dto.js';
 import { HttpError } from '../../common/errors/http-error.js';
+import { validateObjectId } from '../../app/middleware/validate-objectid.middleware.js';
 
 @injectable()
 export class OfferController extends Controller {
@@ -33,19 +34,19 @@ export class OfferController extends Controller {
       path: '/offers/:offerId',
       method: HttpMethod.Get,
       handler: this.show,
-      middlewares: []
+      middlewares: [validateObjectId('offerId')]
     });
     this.addRoute({
       path: '/offers/:offerId',
       method: HttpMethod.Patch,
       handler: this.update,
-      middlewares: []
+      middlewares: [validateObjectId('offerId')]
     });
     this.addRoute({
       path: '/offers/:offerId',
       method: HttpMethod.Delete,
       handler: this.delete,
-      middlewares: []
+      middlewares: [validateObjectId('offerId')]
     });
 
     this.addRoute({

@@ -6,6 +6,7 @@ import { TYPES } from '../../types.js';
 import { CommentServiceInterface } from './comment.service.interface.js';
 import { CreateCommentDto } from './create-comment.dto.js';
 import { HttpError } from '../../common/errors/http-error.js';
+import { validateObjectId } from '../../app/middleware/validate-objectid.middleware.js';
 
 @injectable()
 export class CommentController extends Controller {
@@ -19,14 +20,14 @@ export class CommentController extends Controller {
       path: '/offers/:offerId/comments',
       method: HttpMethod.Get,
       handler: this.index,
-      middlewares: []
+      middlewares: [validateObjectId('offerId')]
     });
 
     this.addRoute({
       path: '/offers/:offerId/comments/:userId',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: []
+      middlewares: [validateObjectId('offerId'), validateObjectId('userId')]
     });
   }
 
