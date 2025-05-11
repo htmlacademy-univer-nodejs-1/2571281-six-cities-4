@@ -13,7 +13,8 @@ export const TYPES = {
   CommentModel   : Symbol.for('CommentModel'),
   FavoriteService : Symbol.for('FavoriteService'),
   FavoriteModel   : Symbol.for('FavoriteModel'),
-  AuthController : Symbol.for('AuthController')
+  AuthController : Symbol.for('AuthController'),
+  ExceptionFilter : Symbol.for('ExceptionFilter')
 };
 
 export interface User {

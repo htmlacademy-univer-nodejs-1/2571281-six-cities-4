@@ -4,13 +4,13 @@ import type { LoggerInterface } from '../libs/logger.interface.js';
 import type { ConfigService } from '../config/config.service.js';
 import { DatabaseClient } from '../database/database-client.interface.js';
 import express, { type Express } from 'express';
-import { StatusCodes } from 'http-status-codes';
 import { Controller } from '../common/controller/controller.js';
 import { container } from '../di/container.js';
 import { UserController } from '../modules/user/user.controller.js';
 import { OfferController } from '../modules/offer/offer.controller.js';
 import { FavoriteController } from '../modules/favorite/favorite.controller.js';
 import { AuthController } from '../modules/auth/auth.controller.js';
+import { ExceptionFilter } from '../common/errors/exception.filter.js';
 
 
 @injectable()
@@ -19,6 +19,7 @@ export class Application {
     @inject(TYPES.Logger) private readonly logger: LoggerInterface,
     @inject(TYPES.Config) private readonly config: ConfigService,
     @inject(TYPES.DatabaseClient) private readonly dbClient: DatabaseClient,
+    @inject(TYPES.ExceptionFilter) private readonly exceptionFilter: ExceptionFilter
   ) {}
 
   private readonly app: Express = express();
@@ -31,9 +32,6 @@ export class Application {
     await this.dbClient.connect(mongoUri);
 
     this.registerMiddlewares();
-    this.app.get('/ping', (_req, res) => {
-      res.sendStatus(StatusCodes.OK);
-    });
 
     this.controllers.push(
       container.get(UserController),
@@ -42,6 +40,8 @@ export class Application {
       container.get(AuthController)
     );
     this.registerControllers();
+
+    this.app.use(this.exceptionFilter.catch);
 
     this.app.listen(port, () =>
       this.logger.info(`🟢 Express server is listening on port ${port}`),

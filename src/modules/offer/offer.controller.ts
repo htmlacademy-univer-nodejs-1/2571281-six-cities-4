@@ -6,6 +6,7 @@ import { TYPES } from '../../types.js';
 
 import { OfferServiceInterface } from './offer.service.interface.js';
 import { CreateOfferDto } from './create-offer.dto.js';
+import { HttpError } from '../../common/errors/http-error.js';
 
 @injectable()
 export class OfferController extends Controller {
@@ -62,7 +63,7 @@ export class OfferController extends Controller {
     const { offerId } = req.params as { offerId: string };
     const offer = await this.offerService.findById(offerId);
     if (!offer) {
-      return this.notFound(res, 'Offer not found');
+      throw new HttpError(404, 'Offer not found', { offerId });
     }
     this.ok(res, offer);
   }
@@ -79,7 +80,7 @@ export class OfferController extends Controller {
     const { offerId } = req.params as { offerId: string };
     const updated = await this.offerService.updateById(offerId, req.body);
     if (!updated) {
-      return this.notFound(res, 'Offer not found');
+      throw new HttpError(404, 'Offer not found', { offerId });
     }
     this.ok(res, updated);
   }
@@ -88,7 +89,7 @@ export class OfferController extends Controller {
     const { offerId } = req.params as { offerId: string };
     const removed = await this.offerService.deleteById(offerId);
     if (!removed) {
-      return this.notFound(res, 'Offer not found');
+      throw new HttpError(404, 'Offer not found', { offerId });
     }
     this.noContent(res);
   }
@@ -97,7 +98,7 @@ export class OfferController extends Controller {
     const { city } = req.params as { city: string };
     const premium = await this.offerService.findPremiumByCity(city);
     if (!premium.length) {
-      return this.notFound(res, 'City not found or no premium offers');
+      throw new HttpError(404, 'City not found or no premium offers', { city });
     }
     this.ok(res, premium);
   }
