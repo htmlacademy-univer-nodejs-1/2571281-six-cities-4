@@ -13,4 +13,6 @@ export interface CommentServiceInterface {
     offerId: string,
     limit?: number,
   ): Promise<DocumentType<CommentEntity>[]>;
+
+  deleteByOffer(offerId: string): Promise<number>;
 }

@@ -37,4 +37,10 @@ export class CommentService implements CommentServiceInterface {
       .limit(limit)
       .exec();
   }
+
+  public async deleteByOffer(offerId: string): Promise<number> {
+    const { deletedCount = 0 } = await this.commentModel.deleteMany({ offer: offerId });
+    this.logger.info(`[Comment] deleted ${deletedCount} comments for offer ${offerId}`);
+    return deletedCount;
+  }
 }
