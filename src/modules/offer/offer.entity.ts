@@ -48,7 +48,7 @@ export class OfferEntity {
     @prop({ required: true, minlength: 20, maxlength: 1024 })
     public description!: string;
 
-    @prop({ required: true })
+    @prop({ required: true, default: () => new Date() })
     public postDate!: Date;
 
     @prop({ required: true, enum: City })
@@ -85,7 +85,7 @@ export class OfferEntity {
     public goods!: Good[];
 
     @prop({ required: true, ref: () => UserEntity })
-    public host!: Ref<UserEntity>;
+    public hostId!: Ref<UserEntity>;
 
     @prop({ default: 0 })
     public commentCount!: number;

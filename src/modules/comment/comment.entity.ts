@@ -1,6 +1,11 @@
-import { getModelForClass, modelOptions, prop, Ref } from '@typegoose/typegoose';
-import { UserEntity } from '../user/user.entity.js';
-import { OfferEntity } from '../offer/offer.entity.js';
+import {
+  getModelForClass,
+  modelOptions,
+  prop,
+  Ref,
+} from '@typegoose/typegoose';
+import { OfferEntity } from '../offer/index.js';
+import { UserEntity } from '../user/index.js';
 
 @modelOptions({
   schemaOptions: {
@@ -15,8 +20,11 @@ export class CommentEntity {
   @prop({ required: true, min: 1, max: 5 })
   public rating!: number;
 
+  @prop({ required: true, default: Date.now })
+  public postDate!: Date;
+
   @prop({ required: true, ref: () => UserEntity })
-  public author!: Ref<UserEntity>;
+  public user!: Ref<UserEntity>;
 
   @prop({ required: true, ref: () => OfferEntity })
   public offer!: Ref<OfferEntity>;

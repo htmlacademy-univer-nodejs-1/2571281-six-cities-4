@@ -7,6 +7,8 @@ import { TYPES } from '../../types.js';
 import { OfferServiceInterface } from './offer.service.interface.js';
 import { CreateOfferDto } from './create-offer.dto.js';
 import { HttpError } from '../../common/errors/http-error.js';
+import { validateObjectId } from '../../app/middleware/validate-objectid.middleware.js';
+import { validateDto } from '../../app/middleware/validate-dto.middleware.js';
 
 @injectable()
 export class OfferController extends Controller {
@@ -20,33 +22,39 @@ export class OfferController extends Controller {
       path: '/offers',
       method: HttpMethod.Get,
       handler: this.index,
+      middlewares: []
     });
     this.addRoute({
       path: '/offers',
       method: HttpMethod.Post,
       handler: this.create,
+      middlewares: [validateDto(CreateOfferDto)]
     });
 
     this.addRoute({
       path: '/offers/:offerId',
       method: HttpMethod.Get,
       handler: this.show,
+      middlewares: [validateObjectId('offerId')]
     });
     this.addRoute({
       path: '/offers/:offerId',
       method: HttpMethod.Patch,
       handler: this.update,
+      middlewares: [validateObjectId('offerId')]
     });
     this.addRoute({
       path: '/offers/:offerId',
       method: HttpMethod.Delete,
       handler: this.delete,
+      middlewares: [validateObjectId('offerId')]
     });
 
     this.addRoute({
       path: '/cities/:city/offers/premium',
       method: HttpMethod.Get,
       handler: this.cityPremium,
+      middlewares: []
     });
   }
 

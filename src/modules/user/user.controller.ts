@@ -3,20 +3,18 @@ import { inject, injectable } from 'inversify';
 
 import { Controller } from '../../common/controller/controller.js';
 import { HttpMethod } from '../../common/http-method.enum.js';
-import { CreateUserDto } from './create-user.dto.js';
-import { createSHA256 } from '../../libs/crypto.js';
+import { CreateUserDto, UserType } from './create-user.dto.js';
 import { UserService } from './user.service.js';
 import { TYPES } from '../../types.js';
 import { UserResponseDto } from './user-response.dto.js';
-import { ConfigService } from '../../config/config.service.js';
 import { RegisterUserDto } from './register-user.dto.js';
 import { plainToInstance } from 'class-transformer';
+import { validateDto } from '../../app/middleware/validate-dto.middleware.js';
 
 @injectable()
 export class UserController extends Controller {
   constructor(
     @inject(TYPES.UserService) private readonly userService: UserService,
-    @inject(TYPES.Config) private readonly config: ConfigService,
   ) {
     super();
 
@@ -24,6 +22,7 @@ export class UserController extends Controller {
       path: '/users',
       method: HttpMethod.Post,
       handler: this.register,
+      middlewares: [validateDto(CreateUserDto)]
     });
   }
 
@@ -31,13 +30,12 @@ export class UserController extends Controller {
     { body }: Request<unknown, unknown, RegisterUserDto>,
     res: Response
   ): Promise<void> {
-
-    const salt = this.config.get('SALT');
-    const passwordHash = createSHA256(body.password, salt);
-
     const createDto: CreateUserDto = {
-      ...body,
-      passwordHash,
+      name: body.name,
+      email: body.email,
+      password: body.password,
+      avatarUrl: body.avatarUrl,
+      type: body.type ?? UserType.Regular,
     };
 
     const newUser = await this.userService.create(createDto);

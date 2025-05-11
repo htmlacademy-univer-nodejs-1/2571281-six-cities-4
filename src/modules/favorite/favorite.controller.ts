@@ -6,6 +6,7 @@ import { HttpMethod } from '../../common/http-method.enum.js';
 import { TYPES } from '../../types.js';
 
 import type { FavoriteServiceInterface } from './favorite.service.interface.js';
+import { validateObjectId } from '../../app/middleware/validate-objectid.middleware.js';
 
 @injectable()
 export class FavoriteController extends Controller {
@@ -18,18 +19,21 @@ export class FavoriteController extends Controller {
       path: '/favorites/:userId',
       method: HttpMethod.Get,
       handler: this.list,
+      middlewares: [validateObjectId('userId')]
     });
 
     this.addRoute({
       path: '/favorites/:userId/:offerId',
       method: HttpMethod.Post,
       handler: this.add,
+      middlewares: [validateObjectId('offerId'), validateObjectId('userId')]
     });
 
     this.addRoute({
       path: '/favorites/:userId/:offerId',
       method: HttpMethod.Delete,
       handler: this.remove,
+      middlewares: [validateObjectId('offerId'), validateObjectId('userId')]
     });
   }
 

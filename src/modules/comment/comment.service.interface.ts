@@ -1,7 +1,16 @@
 import { CreateCommentDto } from './create-comment.dto.js';
 import { CommentEntity } from './comment.entity.js';
+import { DocumentType } from '@typegoose/typegoose';
 
 export interface CommentServiceInterface {
-  create(dto: CreateCommentDto, userId: string, offerId: string): Promise<CommentEntity>;
-  findByOffer(offerId: string, limit?: number): Promise<CommentEntity[]>;
+  create(
+    offerId: string,
+    userId: string,
+    dto: CreateCommentDto,
+  ): Promise<DocumentType<CommentEntity>>;
+
+  findByOffer(
+    offerId: string,
+    limit?: number,
+  ): Promise<DocumentType<CommentEntity>[]>;
 }
